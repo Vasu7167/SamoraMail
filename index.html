@@ -173,6 +173,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <div class="hero">
       <div class="hero-title">What account do you want signals for?</div>
       <div class="hero-sub">Search by company name or contact — SAM scans your sent folder and surfaces what matters.</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 16px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)">
+          <input type="checkbox" id="demoToggle" checked style="accent-color:var(--gold);width:15px;height:15px" onchange="toggleDemo(this.checked)">
+          <span>Demo mode</span>
+        </label>
+        <span style="font-size:12px;color:var(--text3)">— Uses sample data to show what SAM surfaces for any account. Toggle off to connect your real Gmail.</span>
+        <span id="demoBadge" style="margin-left:auto;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(160,117,42,0.15);color:var(--gold-lt);border:1px solid var(--border2);font-weight:600">DEMO</span>
+      </div>
       <!-- API Key input -->
       <div id="apiKeySection" style="margin-bottom:16px">
         <div style="display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 16px">
@@ -236,6 +244,7 @@ function saveHistory(query, signal) {
   localStorage.setItem('sam-history', JSON.stringify(searchHistory));
   renderHistory();
 loadApiKey();
+toggleDemo(true);
 }
 
 function setLoading(query) {
@@ -263,6 +272,50 @@ function setLoading(query) {
   }, 3000);
 }
 
+const DEMO_DATA = {
+  default: {
+    company: null,
+    stats: { threads: 14, sent: 9, lastDate: "3 Jun 2026", daysSince: 4 },
+    signal: { strength: "warm", label: "Active account — 9 emails sent, last touch 4 days ago, meeting outcome pending" },
+    contacts: [
+      { name: "Sarah Mitchell", email: "s.mitchell@{domain}", role: "VP Sales Operations", tag: "decision maker", tagType: "success" },
+      { name: "James Okafor", email: "j.okafor@{domain}", role: "Head of Revenue", tag: "champion", tagType: "success" },
+      { name: "Priya Nair", email: "p.nair@{domain}", role: "CRM Manager", tag: "evaluator", tagType: "blue" },
+      { name: "Tom Bergmann", email: "t.bergmann@{domain}", role: "CFO", tag: "approver", tagType: "amber" },
+    ],
+    threads: [
+      { dot: "green", subject: "Demo & follow-up — pilot proposal", to: "Sarah Mitchell", date: "3 Jun 2026", snippet: "Hi Sarah, following our call on Tuesday, please find the pilot proposal attached. We can onboard your team within 2 weeks...", tags: ["active proposal", "no reply"], tagTypes: ["green", "coral"] },
+      { dot: "amber", subject: "Intro call recap + next steps", to: "James Okafor, Sarah Mitchell", date: "28 May 2026", snippet: "James, great speaking with you today. As discussed, attaching the one-pager on how we've helped similar orgs cut CRM lag by 60%...", tags: ["meeting done", "reply received"], tagTypes: ["green", "green"] },
+      { dot: "amber", subject: "ROI benchmark data you requested", to: "Priya Nair", date: "21 May 2026", snippet: "Hi Priya, as promised here is the ROI data across our 50+ FMCG clients. Average 3.2x improvement in pipeline accuracy...", tags: ["evaluation", "reply received"], tagTypes: ["blue", "green"] },
+      { dot: "gray", subject: "Introduction — FieldAssist for your sales org", to: "Tom Bergmann", date: "12 May 2026", snippet: "Dear Tom, I hope this finds you well. I wanted to reach out as we have been working with several companies in your sector...", tags: ["cold outreach", "no reply"], tagTypes: ["gray", "coral"] },
+      { dot: "green", subject: "New Year greetings from Samora", to: "James Okafor", date: "1 Jan 2026", snippet: "Dear James, wishing you a productive 2026. We look forward to exploring how we can support your team's growth this year...", tags: ["relationship touch"], tagTypes: ["blue"] },
+    ],
+    analysis: "This is a high-intent account with an active proposal in play. Your champion James Okafor is engaged and the evaluator Priya Nair has replied with questions — both strong buying signals. However the pilot proposal sent to Sarah Mitchell 4 days ago has no reply yet. The CFO Tom Bergmann has not responded to cold outreach — a warm introduction via James would de-risk the approval stage.",
+    nextAction: "Follow up with Sarah Mitchell on the pilot proposal sent 3 Jun. If no reply by tomorrow, ask James Okafor to nudge her internally. Separately, request a warm intro to Tom Bergmann through James before budget discussions begin."
+  }
+};
+
+function getDemoData(query) {
+  const d = JSON.parse(JSON.stringify(DEMO_DATA.default));
+  const company = query || "Acme Corp";
+  const domain = company.toLowerCase().replace(/[^a-z0-9]/g,'') + ".com";
+  d.company = company;
+  d.contacts = d.contacts.map(c => ({ ...c, email: c.email.replace('{domain}', domain) }));
+  return d;
+}
+
+function toggleDemo(on) {
+  const badge = document.getElementById('demoBadge');
+  const apiSection = document.getElementById('apiKeySection');
+  if (on) {
+    badge.style.display = '';
+    apiSection.style.display = 'none';
+  } else {
+    badge.style.display = 'none';
+    apiSection.style.display = '';
+  }
+}
+
 function saveApiKey(val) {
   if (val.startsWith('sk-ant-') || val.startsWith('sk-')) {
     localStorage.setItem('sam-api-key', val);
@@ -287,6 +340,21 @@ function loadApiKey() {
 async function runSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
+
+  const isDemo = document.getElementById('demoToggle').checked;
+  
+  if (isDemo) {
+    const btn = document.getElementById('searchBtn');
+    btn.disabled = true;
+    btn.textContent = 'Scanning…';
+    setLoading(query);
+    setTimeout(() => {
+      renderDemoResults(getDemoData(query));
+      btn.disabled = false;
+      btn.textContent = 'Run signal check';
+    }, 2800);
+    return;
+  }
 
   const apiKey = loadApiKey();
   if (!apiKey) {
@@ -392,6 +460,82 @@ async function runSearch() {
 
   btn.disabled = false;
   btn.textContent = 'Run signal check';
+}
+
+function renderDemoResults(d) {
+  const tagClassMap = { success: 'tag-green', blue: 'tag-blue', amber: 'tag-amber', coral: 'tag-coral', gray: 'tag-gray', green: 'tag-green' };
+  const dotClassMap = { green: 'dot-green', amber: 'dot-amber', coral: 'dot-coral', gray: 'dot-gray' };
+
+  const contactsHtml = d.contacts.map(ct => `
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text)">${esc(ct.name)}</div>
+        <div style="font-size:12px;color:var(--text3)">${esc(ct.email)} · ${esc(ct.role)}</div>
+      </div>
+      <span class="tag tag-${ct.tagType}">${esc(ct.tag)}</span>
+    </div>`).join('');
+
+  const threadsHtml = d.threads.map(t => `
+    <div class="thread-item">
+      <div class="thread-dot ${dotClassMap[t.dot] || 'dot-gray'}"></div>
+      <div class="thread-body">
+        <div class="thread-subject">${esc(t.subject)}</div>
+        <div class="thread-to">To: ${esc(t.to)}</div>
+        <div class="thread-snippet">${esc(t.snippet.slice(0,110))}…</div>
+        <div class="thread-footer">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${t.tags.map((tag,i) => `<span class="tag ${tagClassMap[t.tagTypes[i]] || 'tag-gray'}">${esc(tag)}</span>`).join('')}</div>
+          <div class="thread-date">${esc(t.date)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  saveHistory(d.company, 'warm');
+
+  document.getElementById('output').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(160,117,42,0.15);color:var(--gold-lt);border:1px solid var(--border2);font-weight:600">DEMO DATA</span>
+      <span style="font-size:12px;color:var(--text3)">Showing sample signals for any B2B account</span>
+    </div>
+    <div class="result-header">
+      <div>
+        <div class="result-company">${esc(d.company)}</div>
+        <div class="result-meta">${d.stats.threads} threads · ${d.stats.sent} emails sent</div>
+      </div>
+      <button class="action-btn" onclick="document.getElementById('searchInput').value='';document.getElementById('output').innerHTML='<div class=\"empty-state\"><div class=\"empty-icon\">⚡</div><div class=\"empty-title\">Ready to scan</div><div class=\"empty-sub\">Type a company or contact name above</div></div>'">← New search</button>
+    </div>
+
+    <div class="signal-verdict warm">
+      <span>🟡</span>
+      <span>${esc(d.signal.label)}</span>
+      <span style="margin-left:auto;opacity:0.8">${d.stats.daysSince} days since last touch</span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num">${d.stats.sent}</div><div class="stat-lbl">Emails sent</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Got replies</div></div>
+      <div class="stat-card"><div class="stat-num">${d.stats.daysSince}</div><div class="stat-lbl">Days since touch</div></div>
+      <div class="stat-card"><div class="stat-num">${d.contacts.length}</div><div class="stat-lbl">Contacts found</div></div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-header"><span class="ai-badge">⚡ SAM Analysis</span></div>
+      <div class="ai-body">${esc(d.analysis)}</div>
+      <div class="ai-next">
+        <div class="ai-next-lbl">Recommended next step</div>
+        <div class="ai-next-text">${esc(d.nextAction)}</div>
+      </div>
+    </div>
+
+    <div class="section-title">Contact map</div>
+    <div class="timeline" style="margin-bottom:24px">${contactsHtml}</div>
+
+    <div class="section-title">Email thread history</div>
+    <div class="timeline">${threadsHtml}</div>
+
+    <div class="actions" style="margin-top:20px">
+      <button class="action-btn primary" onclick="alert('Connect your Gmail to draft real follow-ups tailored to your actual conversation history.')">✉ Draft follow-up email</button>
+      <button class="action-btn" onclick="navigator.clipboard?.writeText('SAM Signal — ${esc(d.company)}\n\n${esc(d.signal.label)}\n\n${esc(d.analysis)}\n\nNext step: ${esc(d.nextAction)}').then(()=>alert('Signal copied!'))">📋 Copy signal</button>
+    </div>`;
 }
 
 function renderResults(query, emailData, analysis) {
@@ -508,6 +652,7 @@ function copySignal(company, label, summary, next) {
 
 renderHistory();
 loadApiKey();
+toggleDemo(true);
 </script>
 </body>
 </html>
