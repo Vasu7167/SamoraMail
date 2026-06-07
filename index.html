@@ -173,6 +173,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <div class="hero">
       <div class="hero-title">What account do you want signals for?</div>
       <div class="hero-sub">Search by company name or contact — SAM scans your sent folder and surfaces what matters.</div>
+      <!-- API Key input -->
+      <div id="apiKeySection" style="margin-bottom:16px">
+        <div style="display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18" style="color:var(--gold);flex-shrink:0"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          <input id="apiKeyInput" type="password" placeholder="Paste your Anthropic API key (sk-ant-…)" 
+            style="flex:1;background:transparent;border:none;outline:none;font-family:var(--sans);font-size:14px;color:var(--text)"
+            oninput="saveApiKey(this.value)"/>
+          <span id="apiKeyStatus" style="font-size:12px;color:var(--text3);white-space:nowrap"></span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;padding:0 4px">
+          Your key is stored only in this browser. Get yours at <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold-lt)">console.anthropic.com</a>
+        </div>
+      </div>
+
       <div class="search-box">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input class="search-input" id="searchInput" type="text" placeholder="e.g. TotalEnergies, Sanjay Kumar, Ferrero…" onkeydown="if(event.key==='Enter')runSearch()"/>
@@ -221,6 +235,7 @@ function saveHistory(query, signal) {
   searchHistory = searchHistory.slice(0, 10);
   localStorage.setItem('sam-history', JSON.stringify(searchHistory));
   renderHistory();
+loadApiKey();
 }
 
 function setLoading(query) {
@@ -248,9 +263,36 @@ function setLoading(query) {
   }, 3000);
 }
 
+function saveApiKey(val) {
+  if (val.startsWith('sk-ant-') || val.startsWith('sk-')) {
+    localStorage.setItem('sam-api-key', val);
+    document.getElementById('apiKeyStatus').textContent = '✓ Key saved';
+    document.getElementById('apiKeyStatus').style.color = 'var(--green)';
+  } else if (val.length > 0) {
+    document.getElementById('apiKeyStatus').textContent = 'Invalid key format';
+    document.getElementById('apiKeyStatus').style.color = 'var(--coral)';
+  }
+}
+
+function loadApiKey() {
+  const key = localStorage.getItem('sam-api-key');
+  if (key) {
+    document.getElementById('apiKeyInput').value = key;
+    document.getElementById('apiKeyStatus').textContent = '✓ Key saved';
+    document.getElementById('apiKeyStatus').style.color = 'var(--green)';
+  }
+  return key;
+}
+
 async function runSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
+
+  const apiKey = loadApiKey();
+  if (!apiKey) {
+    document.getElementById('output').innerHTML = '<div class="error-box">Please enter your Anthropic API key above to run the signal check.</div>';
+    return;
+  }
 
   const btn = document.getElementById('searchBtn');
   btn.disabled = true;
@@ -261,7 +303,7 @@ async function runSearch() {
     // Step 1 — Search Gmail via Claude + Gmail MCP
     const gmailRes = await fetch(ANTHROPIC_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true', 'x-api-key': loadApiKey() || '' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
@@ -304,7 +346,7 @@ async function runSearch() {
     // Step 2 — Claude analyses and generates signal intelligence
     const analysisRes = await fetch(ANTHROPIC_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true', 'x-api-key': loadApiKey() || '' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
@@ -465,6 +507,7 @@ function copySignal(company, label, summary, next) {
 }
 
 renderHistory();
+loadApiKey();
 </script>
 </body>
 </html>
