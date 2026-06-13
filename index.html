@@ -1,580 +1,902 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SAM Mail Agent — Omnichannel Signal Intelligence by Samora</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --ink:#1C1917;--dusk:#44403C;--ash:#78716C;--fog:#D6CFC4;
-      --iv:#FAF8F4;--paper:#F3EFE8;--smoke:#EDE9E1;
-      --gold:#A0752A;--gl:#C9973E;--cream:#F7F0E0;
-      --dark:#18160F;--dc:#231F17;--dr:#3A3428;
-      --green:#4ADE80;--red:#EF4444;
-      --li:#0A66C2;--em:#EA4335;--wa:#25D366;
-      --maxw:1100px;--ease:cubic-bezier(.25,.46,.45,.94)
-    }
-    html{scroll-behavior:smooth;font-size:16px}
-    body{background:var(--dark);color:var(--fog);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden}
-    a{text-decoration:none;color:inherit}
-    strong{font-weight:500}
-    .container{max-width:var(--maxw);margin:0 auto;padding:0 2rem}
-    h1,h2,h3,h4{font-family:'EB Garamond',serif;line-height:1.15}
-    em{font-style:italic}
-    .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
-    .reveal.visible{opacity:1;transform:none}
-
-    /* NAV */
-    .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(24,22,15,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--dr)}
-    .nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
-    .nav-brand{display:flex;align-items:center;gap:.75rem}
-    .nav-logo{font-family:'EB Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--iv);letter-spacing:.1em}
-    .nav-product{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--gold);letter-spacing:.12em;padding:.2rem .5rem;border:1px solid rgba(160,117,42,.3);border-radius:2px}
-    .nav-back{font-size:.8rem;color:var(--ash);transition:color .2s}
-    .nav-back:hover{color:var(--gl)}
-    .nav-cta-btn{padding:.5rem 1.25rem;background:var(--gold);color:var(--dark);font-size:.82rem;font-weight:500;border-radius:2px;transition:background .2s}
-    .nav-cta-btn:hover{background:var(--gl)}
-
-    /* HERO */
-    .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:5rem 0 4rem}
-    .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-    .hero-bg{position:absolute;inset:0;pointer-events:none}
-    .hero-glow{position:absolute;top:20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(160,117,42,.07),transparent 65%);border-radius:50%}
-    .hero-glow2{position:absolute;bottom:10%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(10,102,194,.05),transparent 65%);border-radius:50%}
-    .hero-content{position:relative;z-index:2;max-width:660px}
-    .hero-eyebrow{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem}
-    .hero-h{font-size:clamp(2.6rem,5.5vw,4.2rem);color:var(--iv);margin-bottom:1.25rem}
-    .hero-h em{color:var(--gl)}
-    .hero-sub{font-size:1.1rem;color:var(--fog);line-height:1.75;margin-bottom:2.5rem;max-width:540px}
-    .hero-sub strong{color:var(--iv)}
-    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem}
-    .btn{display:inline-block;padding:.875rem 2rem;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;border:none;border-radius:2px;transition:all .3s var(--ease)}
-    .btn--gold{background:var(--gold);color:var(--dark)}
-    .btn--gold:hover{background:var(--gl);transform:translateY(-1px)}
-    .btn--ghost{background:transparent;color:var(--fog);border:1px solid var(--dr)}
-    .btn--ghost:hover{border-color:var(--gold);color:var(--gl)}
-
-    /* Channel badges */
-    .hero-channels{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
-    .hero-ch-label{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ash);letter-spacing:.1em}
-    .ch-badge{display:flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:2px;font-family:'DM Mono',monospace;font-size:.65rem;font-weight:500}
-    .ch-badge--li{background:rgba(10,102,194,.15);color:#5BA4CF;border:1px solid rgba(10,102,194,.2)}
-    .ch-badge--em{background:rgba(234,67,53,.12);color:#EA4335;border:1px solid rgba(234,67,53,.15)}
-    .ch-badge--wa{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.15)}
-    .ch-badge--call{background:rgba(160,117,42,.1);color:var(--gl);border:1px solid rgba(160,117,42,.15)}
-
-    /* SIGNAL DEMO */
-    .demo-section{padding:5rem 0;background:#0D0B08;border-top:1px solid var(--dr);border-bottom:1px solid var(--dr)}
-    .demo-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:2.5rem;text-align:center}
-    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
-
-    /* Signal card */
-    .sig-card{background:var(--dc);border:1px solid var(--dr);overflow:hidden;font-family:'DM Mono',monospace}
-    .sig-search{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;background:var(--dark);border-bottom:1px solid var(--dr)}
-    .sig-search-icon{color:var(--gold);font-size:.95rem}
-    .sig-search-input{flex:1;color:var(--cream);font-size:.8rem}
-    .sig-search-btn{font-size:.62rem;color:var(--gold);letter-spacing:.1em;padding:.3rem .65rem;border:1px solid rgba(160,117,42,.3);border-radius:2px;cursor:pointer;background:rgba(160,117,42,.06)}
-    .sig-verdict{display:flex;align-items:center;gap:.85rem;padding:.8rem 1rem;border-bottom:1px solid var(--dr);background:rgba(74,222,128,.04)}
-    .sig-dot{width:10px;height:10px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-    .sig-verdict-label{font-size:.78rem;font-weight:700;color:var(--green);letter-spacing:.12em}
-    .sig-verdict-sub{font-size:.6rem;color:var(--ash);margin-top:.1rem}
-    .sig-verdict-score{margin-left:auto;font-family:'EB Garamond',serif;font-size:2rem;font-weight:700;color:var(--green)}
-    .sig-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--dr)}
-    .sig-stat{padding:.6rem .5rem;text-align:center;border-right:1px solid var(--dr)}
-    .sig-stat:last-child{border-right:none}
-    .sig-stat-n{font-family:'EB Garamond',serif;font-size:1.4rem;font-weight:700;line-height:1}
-    .sig-stat-l{font-size:.56rem;color:var(--ash);margin-top:.15rem}
-    .sig-analysis{padding:.85rem 1rem;border-bottom:1px solid var(--dr)}
-    .sig-analysis-lbl{font-size:.6rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.4rem}
-    .sig-analysis p{color:var(--fog);font-size:.8rem;line-height:1.55;margin:0 0 .5rem;font-family:'DM Sans',sans-serif}
-    .sig-next{color:var(--gl);font-size:.78rem;font-style:italic;font-family:'DM Sans',sans-serif}
-    .sig-timeline{padding:.75rem 1rem}
-    .sig-tl-head{font-size:.58rem;color:var(--ash);letter-spacing:.15em;margin-bottom:.5rem}
-    .sig-tl-item{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.72rem}
-    .sig-tl-item:last-child{border:none}
-    .sig-tag{padding:.1rem .35rem;border-radius:1px;font-size:.58rem;letter-spacing:.06em;font-weight:700;flex-shrink:0}
-    .sig-tl-text{flex:1;color:var(--fog);font-family:'DM Sans',sans-serif}
-    .sig-reply{font-size:.62rem;flex-shrink:0}
-    .sig-reply--yes{color:var(--green)}
-    .sig-reply--opened{color:var(--gl)}
-    .sig-reply--no{color:var(--ash)}
-
-    /* Cold example */
-    .sig-card--cold .sig-verdict{background:rgba(239,68,68,.04)}
-    .sig-card--cold .sig-dot{background:var(--red)}
-    .sig-card--cold .sig-verdict-label{color:var(--red)}
-    .sig-card--cold .sig-verdict-score{color:var(--red)}
-    .sig-warn{display:flex;align-items:center;gap:.5rem;padding:.65rem 1rem;background:rgba(239,68,68,.06);border-bottom:1px solid var(--dr);font-size:.75rem;color:#FCA5A5;font-family:'DM Sans',sans-serif}
-    .sig-warn-icon{font-size:.9rem;flex-shrink:0}
-
-    /* MODULE SECTION */
-    .modules-section{padding:5rem 0}
-    .sec-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem}
-    .sec-h{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:500;color:var(--iv);margin-bottom:1.25rem}
-    .sec-p{font-size:1rem;color:var(--fog);line-height:1.75;max-width:560px;margin-bottom:3rem}
-    .modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:4rem}
-    .mod-card{background:var(--dc);border:1px solid var(--dr);padding:1.75rem 1.5rem;display:flex;flex-direction:column;gap:.6rem;transition:border-color .3s}
-    .mod-card--active{border-top:2px solid var(--gold)}
-    .mod-card--coming{border-top:2px solid var(--dr);opacity:.6}
-    .mod-card:hover{border-color:var(--gold)}
-    .mod-icon{font-size:1.5rem}
-    .mod-name{font-family:'EB Garamond',serif;font-size:1.1rem;color:var(--cream);font-weight:500}
-    .mod-status{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.12em;padding:.15rem .4rem;border-radius:2px;align-self:flex-start}
-    .mod-status--live{background:rgba(74,222,128,.12);color:var(--green)}
-    .mod-status--coming{background:rgba(120,113,108,.1);color:var(--ash)}
-    .mod-desc{font-size:.88rem;color:var(--ash);line-height:1.6}
-    .mod-features{display:flex;flex-direction:column;gap:.3rem;margin-top:.25rem}
-    .mod-feat{font-size:.78rem;color:var(--fog);display:flex;gap:.4rem;align-items:flex-start}
-    .mod-feat::before{content:'—';color:var(--gold);flex-shrink:0}
-
-    /* HOW IT WORKS */
-    .how-section{padding:5rem 0;background:var(--paper)}
-    .how-section .sec-label{color:var(--gold)}
-    .how-section .sec-h{color:var(--ink)}
-    .how-section .sec-p{color:var(--dusk)}
-    .flow-steps{display:flex;flex-direction:column;gap:0;max-width:700px}
-    .flow-step{display:flex;gap:2rem;padding:2rem 0;border-bottom:1px solid var(--smoke)}
-    .flow-step:last-child{border:none}
-    .flow-n{width:44px;height:44px;background:var(--gold);color:var(--dark);display:flex;align-items:center;justify-content:center;font-family:'EB Garamond',serif;font-weight:700;font-size:1.1rem;flex-shrink:0;border-radius:2px}
-    .flow-body h3{font-size:1.1rem;color:var(--ink);margin-bottom:.5rem}
-    .flow-body p{font-size:.92rem;color:var(--dusk);line-height:1.65}
-
-    /* MANAGER VIEW */
-    .manager-section{padding:5rem 0}
-    .manager-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
-    .manager-dash{background:var(--dc);border:1px solid var(--dr);overflow:hidden;font-family:'DM Mono',monospace}
-    .manager-dash-head{display:flex;justify-content:space-between;align-items:center;padding:.65rem 1rem;background:#0D0B08;border-bottom:1px solid var(--dr)}
-    .manager-dash-title{font-size:.68rem;color:var(--gl);letter-spacing:.08em}
-    .manager-dash-meta{font-size:.6rem;color:var(--ash)}
-    .rep-list{display:flex;flex-direction:column}
-    .rep-item{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:.5rem;align-items:center;padding:.65rem 1rem;border-bottom:1px solid rgba(255,255,255,.03)}
-    .rep-item:nth-child(odd){background:rgba(255,255,255,.015)}
-    .rep-item-head{font-size:.58rem;color:var(--ash);letter-spacing:.08em;padding:.4rem 1rem;border-bottom:1px solid var(--dr);display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:.5rem}
-    .rep-name{font-size:.78rem;color:var(--cream);font-family:'DM Sans',sans-serif}
-    .rep-role{font-size:.6rem;color:var(--ash)}
-    .rep-ch{display:flex;gap:.2rem}
-    .rep-ch-dot{width:14px;height:14px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700}
-    .rep-signal{font-size:.68rem;padding:.15rem .4rem;border-radius:2px}
-    .rep-signal--hot{background:rgba(74,222,128,.12);color:var(--green)}
-    .rep-signal--warm{background:rgba(201,151,62,.1);color:var(--gl)}
-    .rep-signal--cold{background:rgba(239,68,68,.1);color:var(--red)}
-    .rep-gap{font-size:.65rem;color:#FCA5A5}
-
-    /* ENTERPRISE / MODULAR */
-    .enterprise-section{padding:5rem 0;background:var(--paper)}
-    .enterprise-section .sec-label{color:var(--gold)}
-    .enterprise-section .sec-h{color:var(--ink)}
-    .deploy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:3rem}
-    .deploy-card{background:var(--dark);padding:1.5rem;border-left:3px solid var(--gold)}
-    .deploy-card h4{color:var(--cream);font-family:'EB Garamond',serif;font-size:1rem;margin-bottom:.5rem}
-    .deploy-card p{color:var(--ash);font-size:.85rem;line-height:1.6}
-    .deploy-step{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.4rem}
-
-    /* CTA SECTION */
-    .cta-section{padding:6rem 0;text-align:center;background:var(--dark);border-top:1px solid var(--dr)}
-    .cta-section .sec-h{color:var(--iv);margin-bottom:1rem}
-    .cta-section p{color:var(--fog);font-size:1rem;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7}
-    .cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-
-    /* FOOTER */
-    .footer{background:#0D0B08;padding:2rem 0;border-top:1px solid var(--dr)}
-    .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-    .footer-brand{font-family:'EB Garamond',serif;font-size:1rem;color:var(--iv);letter-spacing:.1em}
-    .footer-product{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ash)}
-    .footer-link{font-size:.82rem;color:var(--ash);transition:color .2s}
-    .footer-link:hover{color:var(--gl)}
-
-    /* RESPONSIVE */
-    @media(max-width:760px){
-      .demo-grid{grid-template-columns:1fr}
-      .manager-grid{grid-template-columns:1fr}
-      .hero-btns{flex-direction:column}
-      .btn{text-align:center}
-      .rep-item,.rep-item-head{grid-template-columns:1fr 1fr}
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samora — The Intelligence Layer Your Revenue Team Has Been Waiting For</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav class="nav">
+  <nav class="nav" id="nav">
     <div class="nav-inner">
-      <div class="nav-brand">
-        <span class="nav-logo">SAMORA</span>
-        <span class="nav-product">SAM Mail Agent</span>
+      <a href="#hero" class="nav-logo">SAMORA</a>
+      <div class="nav-links">
+        <a href="#problem">The Problem</a>
+        <a href="#solution">How It Works</a>
+        <a href="#sequencing">Prospecting</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#samoratrack">SamoraTrack</a>
+        <a href="#sam-mail">SAM Mail</a>
+        <a href="#agent-sam">Agent SAM</a>
+        <a href="#founder">About</a>
+        <a href="#contact" class="nav-cta">Book a Call</a>
       </div>
-      <a href="https://samoraglobal.com" class="nav-back">← Back to Samora</a>
-      <a href="#cta" class="nav-cta-btn">Request Access</a>
+      <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#problem" class="ml">The Problem</a>
+    <a href="#solution" class="ml">How It Works</a>
+    <a href="#sequencing" class="ml">Prospecting</a>
+    <a href="#dashboard" class="ml">Dashboard</a>
+    <a href="#samoratrack" class="ml">SamoraTrack</a>
+    <a href="#sam-mail" class="ml">SAM Mail</a>
+    <a href="#agent-sam" class="ml">Agent SAM</a>
+    <a href="#founder" class="ml">About</a>
+    <a href="#contact" class="ml ml--cta">Book a Call</a>
+  </div>
+
   <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg">
-      <div class="hero-glow"></div>
-      <div class="hero-glow2"></div>
+  <section class="hero" id="hero">
+    <div class="hero-bg"><div class="grain"></div><div class="bigS">S</div></div>
+    <div class="hero-content container">
+      <p class="eyebrow reveal">Samora — Revenue Intelligence Platform</p>
+      <h1 class="hero-h reveal">The signals were always there.<br/><em>Nobody was listening.</em></h1>
+      <p class="hero-sub reveal">Every call. Every email. Every LinkedIn message. Every day your rep logs what they did. Every note your manager scribbles. Every forecast your board trusts. All of it — unstructured, siloed, speaking to no one.<br/><br/>Until now.</p>
+      <div class="hero-rule reveal"></div>
+      <p class="hero-intro reveal">Samora is the intelligence layer that sits across your entire revenue operation. It takes every unstructured signal — from SamoraTrack, your calendar, your inbox, LinkedIn, WhatsApp, every call recording and meeting note — and turns it into <strong>one living, honest view of your growth.</strong> No CRM updates required. No Excel sheets. No assumptions. Just Agent SAM — your revenue team's intelligent co-pilot, available to every rep, every manager and every board member who needs the truth.</p>
+      <div class="hero-btns reveal">
+        <a href="#contact" class="btn btn--gold">Request a Demo</a>
+        <a href="#problem" class="btn btn--ghost">See Why It Matters</a>
+      </div>
     </div>
+    <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+  </section>
+
+  <div class="marquee-wrap"><div class="marquee-track">
+    <span>Signals That Were Silent Now Speak</span><span class="dot">◆</span>
+    <span>No CRM Updates Required</span><span class="dot">◆</span>
+    <span>Rep Anxiety Eliminated</span><span class="dot">◆</span>
+    <span>Manager Clarity Restored</span><span class="dot">◆</span>
+    <span>Board Gets Honest Forecasts</span><span class="dot">◆</span>
+    <span>Unstructured Data Made Structured</span><span class="dot">◆</span>
+    <span>Agent SAM — Your Revenue Co-pilot</span><span class="dot">◆</span>
+    <span>Signals That Were Silent Now Speak</span><span class="dot">◆</span>
+    <span>No CRM Updates Required</span><span class="dot">◆</span>
+    <span>Rep Anxiety Eliminated</span><span class="dot">◆</span>
+    <span>Manager Clarity Restored</span><span class="dot">◆</span>
+    <span>Board Gets Honest Forecasts</span><span class="dot">◆</span>
+    <span>Unstructured Data Made Structured</span><span class="dot">◆</span>
+    <span>Agent SAM — Your Revenue Co-pilot</span><span class="dot">◆</span>
+  </div></div>
+
+  <!-- PROBLEM — Rewritten around anxiety and silence -->
+  <section class="sec" id="problem">
     <div class="container">
-      <div class="hero-content">
-        <p class="hero-eyebrow reveal">Samora · Signal Intelligence</p>
-        <h1 class="hero-h reveal">Your team is sending signals.<br/><em>Are you reading them?</em></h1>
-        <p class="hero-sub reveal">SAM Mail Agent reads every email sent, every LinkedIn message delivered, every WhatsApp reply received — and tells you the real relationship state for every account. <strong>Not what a rep logged. What actually happened.</strong></p>
-        <div class="hero-btns reveal">
-          <a href="https://samora-mail.vercel.app" class="btn btn--gold">Open SAM Mail Agent →</a>
-          <a href="#how" class="btn btn--ghost">See How It Works</a>
+      <div class="sec-label reveal">The Real Problem</div>
+      <h2 class="sec-h reveal">Everyone on your revenue team<br/>is anxious. And nobody talks about it.</h2>
+      <p class="sec-p reveal">The rep is anxious about whether they're doing enough. The manager is anxious because they have no real visibility — only what reps tell them. The board is anxious because the forecast they're looking at was built on hope, not signal. Samora fixes all three.</p>
+
+      <div class="anxiety-grid">
+        <div class="anxiety-card reveal">
+          <div class="ac-role">THE REP</div>
+          <div class="ac-feeling">Daily anxiety</div>
+          <p class="ac-before">"Did I do enough today? Did I follow up? Was my priority right? I don't even know if my effort is translating into pipeline. I update the CRM but nobody believes it anyway."</p>
+          <div class="ac-arrow">↓ with Samora</div>
+          <p class="ac-after">SamoraTrack gives them a structured daily anchor — priorities, issues, wins. Agent SAM cross-checks every task against actual omnichannel activity and tells them exactly what moved the needle and what didn't. The rep goes home knowing whether they had a good day. Not guessing.</p>
         </div>
-        <div class="hero-channels reveal">
-          <span class="hero-ch-label">CHANNELS</span>
-          <span class="ch-badge ch-badge--em">📧 Gmail</span>
-          <span class="ch-badge ch-badge--li">💼 LinkedIn</span>
-          <span class="ch-badge ch-badge--wa">💬 WhatsApp</span>
-          <span class="ch-badge ch-badge--call">📞 Calls · Coming</span>
+        <div class="anxiety-card anxiety-card--mid reveal">
+          <div class="ac-role">THE MANAGER</div>
+          <div class="ac-feeling">Visibility anxiety</div>
+          <p class="ac-before">"I have no idea what's actually happening in my team's pipeline. The only feedback I can give is 'do more, do more, do more.' I don't know what's blocking them. I don't know which deals are real. My one-on-ones are just storytelling sessions."</p>
+          <div class="ac-arrow">↓ with Samora</div>
+          <p class="ac-after">The manager gets a live view of every rep's daily priorities, every blocker logged, every signal from every channel — verified against real activity. Now the feedback is specific. "Arjun — your Ferrero task is logged but there's been no email, no LinkedIn, no WhatsApp in 26 days. Let's talk about that." Real coaching. Not pressure.</p>
+        </div>
+        <div class="anxiety-card reveal">
+          <div class="ac-role">THE BOARD</div>
+          <div class="ac-feeling">Forecast anxiety</div>
+          <p class="ac-before">"Every board meeting, someone presents a beautiful slide deck with pipeline numbers. Then the quarter closes and we missed by 40%. The data was garbage. The CRM was garbage. Nobody knew it until it was too late."</p>
+          <div class="ac-arrow">↓ with Samora</div>
+          <p class="ac-after">The board has Agent SAM. They ask it directly — what is the real pipeline? What's our actual close probability? Where are we in our expansion plan? SAM reads every signal — not the CRM, not the Excel sheet — and gives a 360-degree view of growth, forecast and accuracy that nobody can manipulate or guess at.</p>
+        </div>
+      </div>
+
+      <div class="quote-block reveal" style="margin-top:3rem">
+        <div class="qb-bar"></div>
+        <p>The signals were always there. In the emails. In the calls. In the notes. In the daily logs. In the LinkedIn messages. They were just never talking to each other. Samora makes them speak.</p>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat reveal"><div class="sn" data-target="79" data-sfx="%">0%</div><div class="sl">of CRM leads never convert</div><div class="ss">Forrester Research</div></div>
+        <div class="sdiv"></div>
+        <div class="stat reveal"><div class="sn" data-target="47" data-sfx="%">0%</div><div class="sl">of reps say CRM data is unreliable</div><div class="ss">Salesforce State of Sales</div></div>
+        <div class="sdiv"></div>
+        <div class="stat reveal"><div class="sn" data-target="65" data-sfx="%">0%</div><div class="sl">of rep time is not selling</div><div class="ss">McKinsey</div></div>
+        <div class="sdiv"></div>
+        <div class="stat reveal"><div class="sn" data-target="15" data-sfx="x">0x</div><div class="sl">more spent on agents vs CRM seats</div><div class="ss">SaaStr, 2025</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION -->
+  <section class="sec sec--dark" id="solution">
+    <div class="container">
+      <div class="sec-label reveal" style="color:var(--gl)">The Solution</div>
+      <h2 class="sec-h reveal" style="color:var(--iv)">Introducing the <em>Honest CRM.</em></h2>
+      <p class="sec-p reveal" style="color:var(--fog)">Samora is the GTM intelligence platform that tells you WHERE you are in your expansion journey — then activates Agent SAM to run the stack that gets you there.</p>
+      <div class="honesty-badge reveal"><div class="hbl"></div><span>HONESTY-FIRST POLICY</span><div class="hbl"></div></div>
+      <div class="pillars">
+        <div class="pillar reveal"><div class="pn">01</div><h3>DIAGNOSE</h3><p>Expansion Readiness Assessment. ICP clarity, value prop sharpness, outreach engine, feedback loops, regional narrative — all scored.</p></div>
+        <div class="pillar-arr">→</div>
+        <div class="pillar reveal"><div class="pn">02</div><h3>DESIGN</h3><p>Advanced ICP building, concise value propositions per segment, account research, personalised email and LinkedIn sequences.</p></div>
+        <div class="pillar-arr">→</div>
+        <div class="pillar reveal"><div class="pn">03</div><h3>DEPLOY</h3><p>Agent SAM runs outreach, captures every signal and feeds them back to product, leadership, investors and individual reps in real time.</p></div>
+      </div>
+      <div class="sprint reveal">
+        <div class="sprint-lbl">Launch With Samora in 5 Weeks</div>
+        <div class="sprint-weeks">
+          <div class="sw"><div class="sw-wk">WK 1</div><div class="sw-t">GTM</div><div class="sw-d">ICP personas, titles, challenges, solution mapping per segment</div></div>
+          <div class="swl"></div>
+          <div class="sw"><div class="sw-wk">WK 2</div><div class="sw-t">Knowledge Base</div><div class="sw-d">LinkedIn + email messaging, account research, segmented value props</div></div>
+          <div class="swl"></div>
+          <div class="sw"><div class="sw-wk">WK 3</div><div class="sw-t">Practice</div><div class="sw-d">Implement, track conversions, email open rates, A/B testing</div></div>
+          <div class="swl"></div>
+          <div class="sw"><div class="sw-wk">WK 4</div><div class="sw-t">Evaluate</div><div class="sw-d">First discovery calls, qualifying, scoring, champion enablement</div></div>
+          <div class="swl"></div>
+          <div class="sw"><div class="sw-wk">WK 5</div><div class="sw-t">Re-iterate</div><div class="sw-d">SQL rate, opportunity rate, proposal % — evolve the playbook</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- LIVE SIGNAL DEMO -->
-  <section class="demo-section">
+  <!-- TAM + SEQUENCING ENGINE -->
+  <section class="sec" id="sequencing">
     <div class="container">
-      <div class="demo-label">Live Signal Examples</div>
-      <div class="demo-grid">
-
-        <!-- HOT signal -->
-        <div class="sig-card reveal">
-          <div class="sig-search">
-            <span class="sig-search-icon">⌕</span>
-            <span class="sig-search-input">NovaMart Ltd</span>
-            <span class="sig-search-btn">Run Signal Check</span>
-          </div>
-          <div class="sig-verdict">
-            <div class="sig-dot"></div>
-            <div><div class="sig-verdict-label">HOT</div><div class="sig-verdict-sub">Last touch: 6 hours ago · 3 channels active</div></div>
-            <div class="sig-verdict-score">91</div>
-          </div>
-          <div class="sig-stats">
-            <div class="sig-stat"><div class="sig-stat-n" style="color:#EA4335">7</div><div class="sig-stat-l">📧 Emails</div></div>
-            <div class="sig-stat"><div class="sig-stat-n" style="color:#0A66C2">12</div><div class="sig-stat-l">💼 LinkedIn</div></div>
-            <div class="sig-stat"><div class="sig-stat-n" style="color:#25D366">5</div><div class="sig-stat-l">💬 WhatsApp</div></div>
-            <div class="sig-stat"><div class="sig-stat-n" style="color:#4ADE80">4</div><div class="sig-stat-l">↩ Replies</div></div>
-          </div>
-          <div class="sig-analysis">
-            <div class="sig-analysis-lbl">SAM Analysis</div>
-            <p>Active across all 3 channels. VP Ops replied to 3 email threads, accepted LinkedIn connection within 2 hrs, and confirmed budget on WhatsApp this morning. Proposal opened twice — no objection reply. Champion is hot. Internal approval imminent.</p>
-            <div class="sig-next">→ Send final T&Cs today. Close window is 7 days.</div>
-          </div>
-          <div class="sig-timeline">
-            <div class="sig-tl-head">Omnichannel Timeline</div>
-            <div class="sig-tl-item"><span class="sig-tag" style="background:rgba(234,67,53,.12);color:#EA4335">email</span><span class="sig-tl-text">Proposal sent — opened 2×</span><span class="sig-reply sig-reply--opened">opened</span></div>
-            <div class="sig-tl-item"><span class="sig-tag" style="background:rgba(10,102,194,.12);color:#0A66C2">linkedin</span><span class="sig-tl-text">Connection accepted + DM replied</span><span class="sig-reply sig-reply--yes">replied</span></div>
-            <div class="sig-tl-item"><span class="sig-tag" style="background:rgba(37,211,102,.1);color:#25D366">whatsapp</span><span class="sig-tl-text">Budget confirmation received</span><span class="sig-reply sig-reply--yes">replied</span></div>
-          </div>
-        </div>
-
-        <!-- COLD signal — the one the old CRM missed -->
-        <div class="sig-card sig-card--cold reveal">
-          <div class="sig-search">
-            <span class="sig-search-icon">⌕</span>
-            <span class="sig-search-input">Ferrero India — Laxmiprasad</span>
-            <span class="sig-search-btn">Run Signal Check</span>
-          </div>
-          <div class="sig-verdict" style="background:rgba(239,68,68,.04)">
-            <div class="sig-dot" style="background:#EF4444"></div>
-            <div><div class="sig-verdict-label" style="color:#EF4444">COLD</div><div class="sig-verdict-sub">Last touch: 26 days ago · 1 channel only</div></div>
-            <div class="sig-verdict-score" style="color:#EF4444">21</div>
-          </div>
-          <div class="sig-warn">
-            <span class="sig-warn-icon">⚠</span>
-            Rep logged "Follow up Ferrero" as today's task. Last email: 26 days ago. No LinkedIn activity. No WhatsApp thread. Task and reality do not match.
-          </div>
-          <div class="sig-stats">
-            <div class="sig-stat"><div class="sig-stat-n" style="color:#EF4444">2</div><div class="sig-stat-l">📧 Emails</div></div>
-            <div class="sig-stat"><div class="sig-stat-n" style="color:var(--ash)">0</div><div class="sig-stat-l">💼 LinkedIn</div></div>
-            <div class="sig-stat"><div class="sig-stat-n" style="color:var(--ash)">0</div><div class="sig-stat-l">💬 WhatsApp</div></div>
-            <div class="sig-stat"><div class="sig-stat-n" style="color:var(--ash)">0</div><div class="sig-stat-l">↩ Replies</div></div>
-          </div>
-          <div class="sig-analysis">
-            <div class="sig-analysis-lbl">SAM Analysis</div>
-            <p>No meaningful engagement on any channel. Last email was a cold outreach 26 days ago — no reply, no follow-up, no LinkedIn connection attempted. Rep marked this as a priority today but the account has been effectively abandoned.</p>
-            <div class="sig-next" style="color:#FCA5A5">→ This is a dying deal. Immediate manager review required before next pipeline call.</div>
-          </div>
-          <div class="sig-timeline">
-            <div class="sig-tl-head">Timeline</div>
-            <div class="sig-tl-item"><span class="sig-tag" style="background:rgba(234,67,53,.12);color:#EA4335">email</span><span class="sig-tl-text">Cold outreach sent — 26 days ago</span><span class="sig-reply sig-reply--no">no reply</span></div>
-            <div class="sig-tl-item"><span class="sig-tag" style="background:rgba(120,113,108,.1);color:var(--ash)">email</span><span class="sig-tl-text">First outreach — 38 days ago</span><span class="sig-reply sig-reply--no">no reply</span></div>
-          </div>
-        </div>
-
-      </div>
+      <div class="sec-label reveal">Prospecting and Sequencing</div>
+      <h2 class="sec-h reveal">Find the right person.<br/>Say the right thing.<br/>On every channel. Automatically.</h2>
+      <p class="sec-p reveal">No list-building. No copy-pasting from LinkedIn. No switching between tools. Agent SAM identifies your TAM, enriches every contact, writes personalised messages from their actual profile — and runs the sequence across email, LinkedIn and WhatsApp without a rep lifting a finger.</p>
     </div>
-  </section>
 
-  <!-- MODULES -->
-  <section class="modules-section">
-    <div class="container">
-      <div class="sec-label reveal">Signal Modules</div>
-      <h2 class="sec-h reveal">Start with one channel.<br/>Scale to all of them.</h2>
-      <p class="sec-p reveal">SAM Mail Agent is modular by design. Deploy only the channels your team uses today. Each module activates independently and adds depth to the unified signal view as you expand.</p>
-      <div class="modules-grid">
-        <div class="mod-card mod-card--active reveal">
-          <div class="mod-icon">📧</div>
-          <div class="mod-name">Gmail Signal</div>
-          <div class="mod-status mod-status--live">Live</div>
-          <div class="mod-desc">Full sent folder analysis. Thread history, open tracking, reply sentiment, contact discovery.</div>
-          <div class="mod-features">
-            <div class="mod-feat">Emails sent per account</div>
-            <div class="mod-feat">Open and reply tracking</div>
-            <div class="mod-feat">Thread sentiment analysis</div>
-            <div class="mod-feat">Cold thread alerts</div>
-            <div class="mod-feat">Task vs email verification</div>
-          </div>
-        </div>
-        <div class="mod-card mod-card--active reveal">
-          <div class="mod-icon">💼</div>
-          <div class="mod-name">LinkedIn Signal</div>
-          <div class="mod-status mod-status--live">Live</div>
-          <div class="mod-desc">Connection requests, DMs, post interactions — all tracked and unified with email in one timeline.</div>
-          <div class="mod-features">
-            <div class="mod-feat">Connection request status</div>
-            <div class="mod-feat">DM sent and reply tracking</div>
-            <div class="mod-feat">Post engagement signals</div>
-            <div class="mod-feat">Intent signals from activity</div>
-            <div class="mod-feat">Profile view detection</div>
-          </div>
-        </div>
-        <div class="mod-card mod-card--active reveal">
-          <div class="mod-icon">💬</div>
-          <div class="mod-name">WhatsApp Signal</div>
-          <div class="mod-status mod-status--live">Live</div>
-          <div class="mod-desc">Native WhatsApp Business tracking. Critical for India, Middle East and Africa markets where WhatsApp is the primary professional channel.</div>
-          <div class="mod-features">
-            <div class="mod-feat">Message delivered + read</div>
-            <div class="mod-feat">Reply rate and timing</div>
-            <div class="mod-feat">Thread sentiment</div>
-            <div class="mod-feat">Cross-referenced with email</div>
-            <div class="mod-feat">WhatsApp-first market support</div>
-          </div>
-        </div>
-        <div class="mod-card mod-card--coming reveal">
-          <div class="mod-icon">📞</div>
-          <div class="mod-name">Call Signal</div>
-          <div class="mod-status mod-status--coming">Coming Soon</div>
-          <div class="mod-desc">JustCall and CallHippo integration. Call recordings, transcripts, outcomes and sentiment cross-referenced with all other channel activity.</div>
-          <div class="mod-features">
-            <div class="mod-feat">Call recordings + transcripts</div>
-            <div class="mod-feat">Outcome and sentiment tagging</div>
-            <div class="mod-feat">Objection detection</div>
-            <div class="mod-feat">Coaching flags for managers</div>
-            <div class="mod-feat">Cross-channel correlation</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="how-section" id="how">
-    <div class="container">
-      <div class="sec-label reveal">How It Works</div>
-      <h2 class="sec-h reveal">From inbox to insight<br/>in seconds.</h2>
-      <p class="sec-p reveal">No manual data entry. No rep reporting. Connect your channels once — SAM reads everything automatically.</p>
-      <div class="flow-steps">
-        <div class="flow-step reveal">
-          <div class="flow-n">01</div>
-          <div class="flow-body">
-            <h3>Connect your channels via OAuth</h3>
-            <p>Each rep connects Gmail, LinkedIn and WhatsApp once during onboarding — one click per channel. OAuth tokens are stored securely. No passwords, no manual exports, no CSV uploads. Done once, works forever.</p>
-          </div>
-        </div>
-        <div class="flow-step reveal">
-          <div class="flow-n">02</div>
-          <div class="flow-body">
-            <h3>Search any account — instantly</h3>
-            <p>Type a company or contact name. SAM scans every channel simultaneously — sent emails, LinkedIn threads, WhatsApp conversations — and pulls the full omnichannel history for that account in seconds.</p>
-          </div>
-        </div>
-        <div class="flow-step reveal">
-          <div class="flow-n">03</div>
-          <div class="flow-body">
-            <h3>AI reads every thread, every channel</h3>
-            <p>Two-stage AI analysis reads what was said, how they responded, how fast, what sentiment, which channel they prefer. Generates a unified Hot / Warm / Cold signal with a precise relationship assessment and one specific next action.</p>
-          </div>
-        </div>
-        <div class="flow-step reveal">
-          <div class="flow-n">04</div>
-          <div class="flow-body">
-            <h3>Task vs reality — verified automatically</h3>
-            <p>Rep logged "Follow up Ferrero" as today's task. SAM checks every channel. Last email: 26 days ago. LinkedIn: no message. WhatsApp: no thread. The gap is surfaced to the manager — before the pipeline review, not at it.</p>
-          </div>
-        </div>
-        <div class="flow-step reveal">
-          <div class="flow-n">05</div>
-          <div class="flow-body">
-            <h3>Manager sees every rep's signals</h3>
-            <p>One dashboard. All reps. All channels. Every signal unified. No rep self-reporting. No "I think I followed up." Org-level signal intelligence — configurable per company based on sales cycle, team type and channel mix.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MANAGER VIEW -->
-  <section class="manager-section">
-    <div class="container">
-      <div class="manager-grid">
-        <div class="reveal">
-          <div class="sec-label">Manager View</div>
-          <h2 class="sec-h" style="color:var(--iv)">Every rep.<br/>Every channel.<br/>One view.</h2>
-          <p style="color:var(--fog);font-size:.97rem;line-height:1.75;margin-bottom:2rem">Managers see the omnichannel activity of every rep in the team — not just what they logged in the CRM. When a rep says an account is active, the signal tells the real story. No one-on-ones spent asking what happened.</p>
-          <ul style="display:flex;flex-direction:column;gap:.65rem;list-style:none">
-            <li style="display:flex;gap:.75rem;font-size:.92rem;color:var(--fog)"><span style="color:var(--gold);flex-shrink:0">—</span>See every rep's email, LinkedIn and WhatsApp activity per account</li>
-            <li style="display:flex;gap:.75rem;font-size:.92rem;color:var(--fog)"><span style="color:var(--gold);flex-shrink:0">—</span>Task vs reality gaps flagged automatically with ⚠ alerts</li>
-            <li style="display:flex;gap:.75rem;font-size:.92rem;color:var(--fog)"><span style="color:var(--gold);flex-shrink:0">—</span>Cold accounts identified before they fall off the forecast</li>
-            <li style="display:flex;gap:.75rem;font-size:.92rem;color:var(--fog)"><span style="color:var(--gold);flex-shrink:0">—</span>Channel preferences per account — know where each buyer responds</li>
-          </ul>
-        </div>
-        <div class="reveal">
-          <div class="manager-dash">
-            <div class="manager-dash-head">
-              <div class="manager-dash-title">Team Signal View — This Week</div>
-              <div class="manager-dash-meta">6 reps · 3 channels</div>
+    <!-- STEP 1: TAM IDENTIFICATION DASHBOARD -->
+    <div class="seq-block seq-block--light">
+      <div class="container">
+        <div class="seq-step-label">STEP 01 — FIND YOUR MARKET</div>
+        <div class="seq-two-col">
+          <div class="seq-left reveal">
+            <h3>Your TAM. Identified in minutes.<br/>Not weeks.</h3>
+            <p>Tell Agent SAM who you're going after — industry, company size, geography, role. It searches LinkedIn, enriches every contact with verified email and WhatsApp, scores them against your ICP and hands you a qualified list. No SDR hours. No data vendor subscription required.</p>
+            <div class="seq-bullets">
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>ICP-matched prospects from LinkedIn Sales Navigator filters</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>Verified email, phone and WhatsApp for every contact</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>Company news, recent posts, hiring signals pulled automatically</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>ICP score assigned before outreach begins — only qualified contacts enter sequences</div>
             </div>
-            <div class="rep-item-head">
-              <span>Rep</span><span>Channels Active</span><span>Signal</span><span>Gap Alert</span>
-            </div>
-            <div class="rep-list">
-              <div class="rep-item">
-                <div><div class="rep-name">Shubham T.</div><div class="rep-role">AE · FMCG</div></div>
-                <div class="rep-ch"><div class="rep-ch-dot" style="background:rgba(234,67,53,.15);color:#EA4335">@</div><div class="rep-ch-dot" style="background:rgba(10,102,194,.15);color:#0A66C2">in</div><div class="rep-ch-dot" style="background:rgba(37,211,102,.12);color:#25D366">w</div></div>
-                <span class="rep-signal rep-signal--hot">HOT</span>
-                <span style="color:var(--ash);font-size:.65rem">None</span>
+          </div>
+          <div class="seq-right reveal">
+            <!-- Prospect list dashboard mockup -->
+            <div class="seq-dash">
+              <div class="seq-dash-bar">
+                <div class="seq-dash-title">Prospect List — FMCG India · VP Sales + VP RTM</div>
+                <div class="seq-dash-meta"><span class="seq-live-dot"></span>247 contacts · 184 ICP matched</div>
               </div>
-              <div class="rep-item">
-                <div><div class="rep-name">Prachi M.</div><div class="rep-role">SDR · CPG</div></div>
-                <div class="rep-ch"><div class="rep-ch-dot" style="background:rgba(234,67,53,.15);color:#EA4335">@</div><div class="rep-ch-dot" style="background:rgba(10,102,194,.15);color:#0A66C2">in</div></div>
-                <span class="rep-signal rep-signal--warm">WARM</span>
-                <span style="color:var(--ash);font-size:.65rem">None</span>
+              <div class="seq-dash-filters">
+                <span class="seq-filter seq-filter--active">All (247)</span>
+                <span class="seq-filter">ICP Match (184)</span>
+                <span class="seq-filter">High Intent (43)</span>
+                <span class="seq-filter">In Sequence (38)</span>
               </div>
-              <div class="rep-item">
-                <div><div class="rep-name">Arjun K.</div><div class="rep-role">AE · RTM</div></div>
-                <div class="rep-ch"><div class="rep-ch-dot" style="background:rgba(234,67,53,.15);color:#EA4335">@</div></div>
-                <span class="rep-signal rep-signal--cold">COLD</span>
-                <span class="rep-gap">⚠ 3 task gaps</span>
-              </div>
-              <div class="rep-item">
-                <div><div class="rep-name">Sneha R.</div><div class="rep-role">AE · Enterprise</div></div>
-                <div class="rep-ch"><div class="rep-ch-dot" style="background:rgba(234,67,53,.15);color:#EA4335">@</div><div class="rep-ch-dot" style="background:rgba(37,211,102,.12);color:#25D366">w</div></div>
-                <span class="rep-signal rep-signal--hot">HOT</span>
-                <span style="color:var(--ash);font-size:.65rem">None</span>
-              </div>
-              <div class="rep-item">
-                <div><div class="rep-name">Rahul P.</div><div class="rep-role">SDR · West</div></div>
-                <div class="rep-ch"><div class="rep-ch-dot" style="background:rgba(234,67,53,.15);color:#EA4335">@</div><div class="rep-ch-dot" style="background:rgba(10,102,194,.15);color:#0A66C2">in</div></div>
-                <span class="rep-signal rep-signal--warm">WARM</span>
-                <span class="rep-gap">⚠ 1 task gap</span>
+              <div class="seq-prospect-list">
+                <div class="seq-prospect-head">
+                  <span>Contact</span><span>Company</span><span>ICP Score</span><span>Channels</span><span>Status</span>
+                </div>
+                <div class="seq-prospect">
+                  <div class="seq-p-info"><div class="seq-p-avatar">RS</div><div><div class="seq-p-name">Rajesh Sharma</div><div class="seq-p-role">VP Sales · FMCG</div></div></div>
+                  <div class="seq-p-co">Marico Ltd</div>
+                  <div class="seq-p-score seq-p-score--high">94</div>
+                  <div class="seq-p-ch"><span class="seq-ch seq-ch--li">in</span><span class="seq-ch seq-ch--em">@</span><span class="seq-ch seq-ch--wa">w</span></div>
+                  <div class="seq-p-status seq-p-status--active">In Sequence</div>
+                </div>
+                <div class="seq-prospect">
+                  <div class="seq-p-info"><div class="seq-p-avatar">PK</div><div><div class="seq-p-name">Priya Kulkarni</div><div class="seq-p-role">Head RTM · CPG</div></div></div>
+                  <div class="seq-p-co">Dabur India</div>
+                  <div class="seq-p-score seq-p-score--high">88</div>
+                  <div class="seq-p-ch"><span class="seq-ch seq-ch--li">in</span><span class="seq-ch seq-ch--em">@</span></div>
+                  <div class="seq-p-status seq-p-status--active">Step 2 of 5</div>
+                </div>
+                <div class="seq-prospect">
+                  <div class="seq-p-info"><div class="seq-p-avatar">AM</div><div><div class="seq-p-name">Arjun Mehta</div><div class="seq-p-role">VP Distribution</div></div></div>
+                  <div class="seq-p-co">Godrej Consumer</div>
+                  <div class="seq-p-score seq-p-score--med">71</div>
+                  <div class="seq-p-ch"><span class="seq-ch seq-ch--li">in</span><span class="seq-ch seq-ch--em">@</span><span class="seq-ch seq-ch--wa">w</span></div>
+                  <div class="seq-p-status seq-p-status--warm">Replied ↩</div>
+                </div>
+                <div class="seq-prospect">
+                  <div class="seq-p-info"><div class="seq-p-avatar">SN</div><div><div class="seq-p-name">Sunita Nair</div><div class="seq-p-role">Sales Director</div></div></div>
+                  <div class="seq-p-co">Emami Limited</div>
+                  <div class="seq-p-score seq-p-score--med">66</div>
+                  <div class="seq-p-ch"><span class="seq-ch seq-ch--li">in</span></div>
+                  <div class="seq-p-status seq-p-status--pending">Pending Enrich</div>
+                </div>
+                <div class="seq-prospect">
+                  <div class="seq-p-info"><div class="seq-p-avatar">VR</div><div><div class="seq-p-name">Vikram Reddy</div><div class="seq-p-role">National Sales Head</div></div></div>
+                  <div class="seq-p-co">ITC Limited</div>
+                  <div class="seq-p-score seq-p-score--high">91</div>
+                  <div class="seq-p-ch"><span class="seq-ch seq-ch--li">in</span><span class="seq-ch seq-ch--em">@</span><span class="seq-ch seq-ch--wa">w</span></div>
+                  <div class="seq-p-status seq-p-status--active">Step 1 of 5</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- STEP 2: PERSONALISED SEQUENCE BUILDER -->
+    <div class="seq-block seq-block--dark">
+      <div class="container">
+        <div class="seq-step-label" style="color:var(--gl)">STEP 02 — BUILD THE SEQUENCE</div>
+        <div class="seq-two-col">
+          <div class="seq-left reveal">
+            <!-- Sequence builder mockup -->
+            <div class="seq-builder">
+              <div class="seq-builder-head">
+                <div class="seq-builder-title">Sequence: FMCG VP Sales — India</div>
+                <div class="seq-builder-meta">5 steps · 18 days · 38 contacts enrolled</div>
+              </div>
+              <div class="seq-steps">
+                <div class="seq-step-item seq-step-item--done">
+                  <div class="ssi-left">
+                    <div class="ssi-icon ssi-icon--li">in</div>
+                    <div class="ssi-line"></div>
+                  </div>
+                  <div class="ssi-body">
+                    <div class="ssi-meta"><span class="ssi-type">LinkedIn Connection</span><span class="ssi-day">Day 1</span></div>
+                    <div class="ssi-preview">"Hi {first_name}, I came across your recent post on {their_post_topic} — your take on distribution challenges resonated strongly. Would love to connect."</div>
+                    <div class="ssi-stats"><span class="ssi-stat ssi-stat--g">38 sent</span><span class="ssi-stat ssi-stat--g">24 accepted</span></div>
+                  </div>
+                </div>
+                <div class="seq-step-item seq-step-item--done">
+                  <div class="ssi-left">
+                    <div class="ssi-icon ssi-icon--em">@</div>
+                    <div class="ssi-line"></div>
+                  </div>
+                  <div class="ssi-body">
+                    <div class="ssi-meta"><span class="ssi-type">Email — Personalised</span><span class="ssi-day">Day 3</span></div>
+                    <div class="ssi-preview">"Subject: {company_name} + RTM visibility gap | Hi {first_name}, noticed {company} expanded into {recent_geography} — the biggest challenge at that scale is usually real-time field signal…"</div>
+                    <div class="ssi-stats"><span class="ssi-stat ssi-stat--g">31 delivered</span><span class="ssi-stat ssi-stat--y">18 opened</span><span class="ssi-stat ssi-stat--g">6 replied</span></div>
+                  </div>
+                </div>
+                <div class="seq-step-item seq-step-item--active">
+                  <div class="ssi-left">
+                    <div class="ssi-icon ssi-icon--wa">w</div>
+                    <div class="ssi-line"></div>
+                  </div>
+                  <div class="ssi-body">
+                    <div class="ssi-meta"><span class="ssi-type">WhatsApp Follow-up</span><span class="ssi-day">Day 7</span><span class="ssi-running">Running</span></div>
+                    <div class="ssi-preview">"Hi {first_name} — following up on my email. Shared how a similar FMCG team eliminated CRM lag entirely. Happy to walk you through in 15 mins this week?"</div>
+                    <div class="ssi-stats"><span class="ssi-stat ssi-stat--y">12 sent</span><span class="ssi-stat ssi-stat--g">8 delivered</span></div>
+                  </div>
+                </div>
+                <div class="seq-step-item seq-step-item--pending">
+                  <div class="ssi-left">
+                    <div class="ssi-icon ssi-icon--li">in</div>
+                    <div class="ssi-line"></div>
+                  </div>
+                  <div class="ssi-body">
+                    <div class="ssi-meta"><span class="ssi-type">LinkedIn Message</span><span class="ssi-day">Day 12</span><span class="ssi-pending">Pending</span></div>
+                    <div class="ssi-preview">"{first_name} — sent you a quick note on email and WhatsApp. Would love 20 mins to show you what honest signal capture looks like for a team your size."</div>
+                  </div>
+                </div>
+                <div class="seq-step-item seq-step-item--pending">
+                  <div class="ssi-left">
+                    <div class="ssi-icon ssi-icon--em">@</div>
+                  </div>
+                  <div class="ssi-body">
+                    <div class="ssi-meta"><span class="ssi-type">Email — Final Touch</span><span class="ssi-day">Day 18</span><span class="ssi-pending">Pending</span></div>
+                    <div class="ssi-preview">"Closing the loop, {first_name}. If the timing isn't right — no worries. I'll check back in Q3. But if you're thinking about how to fix your pipeline visibility before your next board review…"</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="seq-right reveal">
+            <h3>Zero manual message writing.<br/>100% personalised to their profile.</h3>
+            <p>Agent SAM reads each prospect's LinkedIn profile, recent posts, company news and hiring signals before writing their message. No templates. No mail merge. Every message is written from their actual context — in your voice, at scale.</p>
+            <div class="seq-bullets">
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>LinkedIn connection note references their actual recent post or career move</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>Email subject line includes their company name and a relevant signal</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>WhatsApp follow-up adapts based on whether they opened the email</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>If they reply on any channel — sequence pauses, rep is notified</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--gold"></span>No CRM update required. Every step is logged automatically.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: UNIFIED INBOX + SIGNAL INTELLIGENCE -->
+    <div class="seq-block seq-block--light">
+      <div class="container">
+        <div class="seq-step-label">STEP 03 — READ EVERY SIGNAL</div>
+        <div class="seq-two-col">
+          <div class="seq-left reveal">
+            <h3>Every reply. Every channel.<br/>One unified view.</h3>
+            <p>When a prospect replies on LinkedIn, opens your email three times, or responds on WhatsApp — Agent SAM reads it, categorises the intent (interested, not now, unsubscribe, objection) and decides what happens next. Your rep sees a single prioritised inbox. No tool-switching. No missed replies.</p>
+            <div class="seq-bullets">
+              <div class="seq-bullet"><span class="sb-dot sb-dot--green"></span>Replies from all three channels land in one inbox</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--green"></span>Agent SAM reads the reply and categorises intent automatically</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--green"></span>Buying signals escalated to rep immediately</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--green"></span>Unsubscribes detected and removed — zero manual scrubbing</div>
+              <div class="seq-bullet"><span class="sb-dot sb-dot--green"></span>Engagement data feeds directly into the Samora pipeline score</div>
+            </div>
+          </div>
+          <div class="seq-right reveal">
+            <!-- Unified inbox mockup -->
+            <div class="seq-inbox">
+              <div class="seq-inbox-head">
+                <div class="seq-inbox-title">Unified Inbox</div>
+                <div class="seq-inbox-meta">14 new replies · 3 hot signals</div>
+              </div>
+              <div class="seq-inbox-list">
+                <div class="seq-inbox-item seq-inbox-item--hot">
+                  <div class="sii-ch sii-ch--wa">w</div>
+                  <div class="sii-body">
+                    <div class="sii-name">Arjun Mehta <span class="sii-co">Godrej Consumer</span></div>
+                    <div class="sii-msg">"Yes interested. Can we do Thursday 4pm?"</div>
+                    <div class="sii-tag sii-tag--hot">🔥 Meeting Request</div>
+                  </div>
+                  <div class="sii-time">2m ago</div>
+                </div>
+                <div class="seq-inbox-item seq-inbox-item--hot">
+                  <div class="sii-ch sii-ch--em">@</div>
+                  <div class="sii-body">
+                    <div class="sii-name">Rajesh Sharma <span class="sii-co">Marico Ltd</span></div>
+                    <div class="sii-msg">"Interesting timing — we're evaluating CRM tools right now. Send more details?"</div>
+                    <div class="sii-tag sii-tag--hot">🔥 Buying Intent</div>
+                  </div>
+                  <div class="sii-time">14m ago</div>
+                </div>
+                <div class="seq-inbox-item">
+                  <div class="sii-ch sii-ch--li">in</div>
+                  <div class="sii-body">
+                    <div class="sii-name">Priya Kulkarni <span class="sii-co">Dabur India</span></div>
+                    <div class="sii-msg">"Thanks for connecting. Not the right time — maybe Q4."</div>
+                    <div class="sii-tag sii-tag--warm">⏳ Not Now · Re-enroll Q4</div>
+                  </div>
+                  <div class="sii-time">1h ago</div>
+                </div>
+                <div class="seq-inbox-item">
+                  <div class="sii-ch sii-ch--em">@</div>
+                  <div class="sii-body">
+                    <div class="sii-name">Sunita Nair <span class="sii-co">Emami Limited</span></div>
+                    <div class="sii-msg">"Opened email 3×" <span style="color:var(--ash);font-size:.7rem">· no reply yet</span></div>
+                    <div class="sii-tag sii-tag--signal">👀 High Engagement · Follow up</div>
+                  </div>
+                  <div class="sii-time">3h ago</div>
+                </div>
+              </div>
+              <div class="seq-inbox-footer">
+                <span>No manual CRM entry. All activity logged automatically.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
 
-  <!-- ENTERPRISE / MODULAR DEPLOY -->
-  <section class="enterprise-section">
+  <!-- DASHBOARD PREVIEW -->
+  <section class="sec" id="dashboard">
     <div class="container">
-      <div class="sec-label reveal">Deployment</div>
-      <h2 class="sec-h reveal">Deploy what fits.<br/>Expand when ready.</h2>
-      <p class="sec-p reveal" style="color:var(--dusk)">SAM Mail Agent is a module within the Samora platform. Orgs choose which channels to activate — based on their current stack, their market and their team's readiness. No rip-and-replace. No change management project.</p>
-      <div class="deploy-grid">
-        <div class="deploy-card reveal">
-          <div class="deploy-step">STARTER</div>
-          <h4>Gmail Only</h4>
-          <p>Connect sent folder. Activate email signal checks. Task vs email verification live for every rep. Manager view enabled. Set up in under 30 minutes.</p>
+      <div class="sec-label reveal">Live Dashboard</div>
+      <h2 class="sec-h reveal">What reality looks like<br/>when it's finally captured.</h2>
+      <p class="sec-p reveal">A live sneak peek into the Samora dashboard — built on signals from every call, email, meeting and LinkedIn touch. No rep logged a single thing here.</p>
+    </div>
+
+    <div class="db-wrap">
+      <div class="db-chrome reveal">
+
+        <!-- Top bar -->
+        <div class="db-bar">
+          <div class="db-logo-s">SAMORA</div>
+          <div class="db-bar-title">Honest CRM — Live Signal Dashboard</div>
+          <div class="db-live-badge"><span class="ld"></span>LIVE</div>
         </div>
-        <div class="deploy-card reveal">
-          <div class="deploy-step">GROWTH</div>
-          <h4>Gmail + LinkedIn</h4>
-          <p>Add LinkedIn signals when your team adopts outreach sequencing. Unified email + LinkedIn timeline per account. Intent signals from post activity and DM engagement.</p>
+
+        <!-- KPIs -->
+        <div class="db-kpis">
+          <div class="kpi k--gold"><div class="kv" id="k0">—</div><div class="kl">Active Deals</div><div class="kd kd--pos">+12 this week</div></div>
+          <div class="kpi k--gold"><div class="kv" id="k1">—</div><div class="kl">Pipeline Value (₹)</div><div class="kd kd--pos">+18% vs last qtr</div></div>
+          <div class="kpi k--gold"><div class="kv" id="k2">—</div><div class="kl">Forecast Accuracy</div><div class="kd kd--pos">+34 pts (was 53%)</div></div>
+          <div class="kpi k--red"><div class="kv" id="k3">—</div><div class="kl">At-Risk Deals</div><div class="kd kd--neg">3 critical this week</div></div>
+          <div class="kpi k--red"><div class="kv" id="k4">—</div><div class="kl">Cold Threads</div><div class="kd kd--neg">Need re-engagement</div></div>
         </div>
-        <div class="deploy-card reveal">
-          <div class="deploy-step">SCALE</div>
-          <h4>All Channels</h4>
-          <p>Full omnichannel — email, LinkedIn, WhatsApp, calls. One unified signal per account. Works natively for India, Middle East and Africa markets where WhatsApp is primary.</p>
+
+        <!-- Three columns -->
+        <div class="db-cols">
+
+          <!-- Funnel -->
+          <div class="dbc dbc--funnel">
+            <div class="dbc-head">PIPELINE FUNNEL</div>
+            <div class="funnel" id="funnel">
+              <div class="fi"><div class="fi-l">Prospects</div><div class="fi-bw"><div class="fi-b" style="--p:100%;--c:#78716C"></div></div><div class="fi-n">340</div></div>
+              <div class="fi"><div class="fi-l">ICP Matched</div><div class="fi-bw"><div class="fi-b" style="--p:62%;--c:#A0752A"></div></div><div class="fi-n">210</div></div>
+              <div class="fi"><div class="fi-l">Contacted</div><div class="fi-bw"><div class="fi-b" style="--p:44%;--c:#C9973E"></div></div><div class="fi-n">148</div></div>
+              <div class="fi"><div class="fi-l">Discovery</div><div class="fi-bw"><div class="fi-b" style="--p:24%;--c:#A0752A"></div></div><div class="fi-n">82</div></div>
+              <div class="fi"><div class="fi-l">Proposal</div><div class="fi-bw"><div class="fi-b" style="--p:13%;--c:#C9973E"></div></div><div class="fi-n">44</div></div>
+              <div class="fi"><div class="fi-l">Negotiation</div><div class="fi-bw"><div class="fi-b" style="--p:6%;--c:#A0752A"></div></div><div class="fi-n">21</div></div>
+              <div class="fi fi--win"><div class="fi-l">Closed Won</div><div class="fi-bw"><div class="fi-b" style="--p:3%;--c:#4ADE80"></div></div><div class="fi-n">9</div></div>
+            </div>
+          </div>
+
+          <!-- Live Feed -->
+          <div class="dbc dbc--feed">
+            <div class="dbc-head">LIVE SIGNAL FEED <span class="fc" id="fc">loading…</span></div>
+            <div class="feed" id="feed"></div>
+          </div>
+
+          <!-- Deal Health -->
+          <div class="dbc dbc--health">
+            <div class="dbc-head">DEAL HEALTH SCORES</div>
+            <div class="deals">
+              <div class="di"><div class="di-i"><div class="di-co">NovaMart Ltd</div><div class="di-st">Negotiation</div></div><div class="di-bw"><div class="di-b" style="--w:92%;--c:#4ADE80"></div></div><span style="color:#4ADE80">92</span></div>
+              <div class="di"><div class="di-i"><div class="di-co">Acme Corp</div><div class="di-st">Proposal</div></div><div class="di-bw"><div class="di-b" style="--w:84%;--c:#A0752A"></div></div><span style="color:#A0752A">84</span></div>
+              <div class="di"><div class="di-i"><div class="di-co">GreenPack India</div><div class="di-st">Proposal</div></div><div class="di-bw"><div class="di-b" style="--w:85%;--c:#A0752A"></div></div><span style="color:#A0752A">85</span></div>
+              <div class="di"><div class="di-i"><div class="di-co">BlueStar Foods</div><div class="di-st">Discovery</div></div><div class="di-bw"><div class="di-b" style="--w:71%;--c:#C9973E"></div></div><span style="color:#C9973E">71</span></div>
+              <div class="di"><div class="di-i"><div class="di-co">Zephyr Group</div><div class="di-st">Demo Done</div></div><div class="di-bw"><div class="di-b" style="--w:67%;--c:#C9973E"></div></div><span style="color:#C9973E">67</span></div>
+              <div class="di"><div class="di-i"><div class="di-co">TechCo Solutions</div><div class="di-st">Prospect</div></div><div class="di-bw"><div class="di-b" style="--w:24%;--c:#EF4444"></div></div><span style="color:#EF4444">24</span></div>
+            </div>
+          </div>
         </div>
-        <div class="deploy-card reveal">
-          <div class="deploy-step">ENTERPRISE</div>
-          <h4>Org-level Config</h4>
-          <p>Configurable signal thresholds per org — cold threshold, hot triggers, activity targets, deal stages. Same SAM engine, calibrated to your sales cycle and team structure.</p>
+
+        <!-- Scoring row -->
+        <div class="db-score-row">
+          <div class="dsr-label">PREDICTABILITY ENGINE — Joint scores updated continuously across all channels</div>
+          <div class="dsr-bars">
+            <div class="dsb"><div class="dsb-n">Lead Score</div><div class="dsb-t"><div class="dsb-f" style="--w:0%;--c:#A0752A"></div></div><div class="dsb-v">84</div></div>
+            <div class="dsb"><div class="dsb-n">Conversation Health</div><div class="dsb-t"><div class="dsb-f" style="--w:0%;--c:#C9973E"></div></div><div class="dsb-v">71</div></div>
+            <div class="dsb"><div class="dsb-n">Deal Probability</div><div class="dsb-t"><div class="dsb-f" style="--w:0%;--c:#78716C"></div></div><div class="dsb-v">68</div></div>
+            <div class="dsb"><div class="dsb-n">Stage Velocity</div><div class="dsb-t"><div class="dsb-f" style="--w:0%;--c:#4ADE80"></div></div><div class="dsb-v">92</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SAMORATRACK -->
+  <section class="sec sec--paper" id="samoratrack">
+    <div class="container">
+      <div class="sec-label reveal">SamoraTrack</div>
+      <h2 class="sec-h reveal">What your reps intend to do<br/>vs what they actually did.</h2>
+      <p class="sec-p reveal">CRMs wait for reps to log. SamoraTrack captures intent at the start of the day — then cross-references it against actual omnichannel activity: emails sent, LinkedIn messages delivered, WhatsApp threads, call outcomes. The gap between the two is where pipeline goes to die.</p>
+
+      <div class="st-philosophy reveal">
+        <div class="stp-bar"></div>
+        <p>A rep logs "Follow up with Ferrero." SAM checks the sent folder. Last email to ferrero.com was 26 days ago. That's not a follow-up — that's a dying deal. The manager sees it before the forecast review does.</p>
+      </div>
+
+      <div class="st-app-showcase">
+        <div class="st-mockup reveal">
+          <div class="st-phone">
+            <div class="st-phone-bar">
+              <span class="st-phone-logo">SamoraTrack</span>
+              <span class="st-phone-date" id="stPhoneDate">Today</span>
+            </div>
+            <div class="st-phone-progress">
+              <div class="st-pp-label">Today's Progress</div>
+              <div class="st-pp-track"><div class="st-pp-fill" id="stProgressFill" style="width:0%"></div></div>
+              <div class="st-pp-num">2 of 4 done · 1 priority ★</div>
+            </div>
+            <div class="st-phone-tabs">
+              <button class="st-tab active" data-stab="priorities" onclick="switchStab(this)">☑ Tasks</button>
+              <button class="st-tab" data-stab="issues" onclick="switchStab(this)">⚡ Issues</button>
+              <button class="st-tab" data-stab="wins" onclick="switchStab(this)">★ Wins</button>
+              <button class="st-tab" data-stab="review" onclick="switchStab(this)">✦ Review</button>
+            </div>
+            <div class="st-phone-body">
+              <div class="st-panel active" id="stpanel-priorities">
+                <div class="st-entry st-entry--done"><span>✓</span>Follow up NovaMart — decision call <span class="st-signal st-signal--verified">✓ email sent 2h ago</span></div>
+                <div class="st-entry st-entry--done"><span>✓</span>LinkedIn connect — Reckitt VP Sales <span class="st-signal st-signal--verified">✓ accepted + replied</span></div>
+                <div class="st-entry st-entry--priority"><span>★</span>WhatsApp follow-up — GreenPack CFO <span class="st-signal st-signal--verified">✓ delivered 9:14am</span></div>
+                <div class="st-entry st-entry--open st-entry--warn"><span>○</span>Follow up Ferrero — Laxmiprasad <span class="st-signal st-signal--warn">⚠ last email 26d ago</span></div>
+              </div>
+              <div class="st-panel" id="stpanel-issues">
+                <div class="st-entry st-entry--issue"><span>!</span>BlueStar asking for data residency clause — not in MSA</div>
+                <div class="st-entry st-entry--issue"><span>!</span>TechCo champion silent after budget freeze</div>
+                <div class="st-entry st-entry--issue"><span>!</span>Nigeria — local payment terms not supported yet</div>
+              </div>
+              <div class="st-panel" id="stpanel-wins">
+                <div class="st-entry st-entry--win"><span>★</span>GreenPack closed — ₹8.5L ✓</div>
+                <div class="st-entry st-entry--win"><span>★</span>NovaMart VP Ops confirmed internal budget</div>
+                <div class="st-entry st-entry--win"><span>↩</span>Carried from yesterday: FAQ sent to 3 West Africa leads</div>
+              </div>
+              <div class="st-panel" id="stpanel-review">
+                <div class="st-review-card">
+                  <div class="st-review-label">✦ Claude's Daily Review</div>
+                  <div class="st-review-body">2 of 4 tasks verified against actual outreach. ⚠ Ferrero task logged but no email sent in 26 days — this is a dying deal, not an active one. Data residency clause flagged 3 times across the team this week — P1 product gap. Tomorrow: map GreenPack CFO before buying committee expands.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="st-features reveal">
+          <div class="st-feat-head">Intent logged. Reality verified. Gap surfaced.</div>
+          <div class="st-feat">
+            <div class="st-feat-icon st-feat-icon--gold">☑</div>
+            <div><strong>Tasks vs Reality Check</strong><p>Reps log what they plan to do. SAM cross-references against actual sent emails, LinkedIn messages, WhatsApp threads and call logs. If the activity didn't happen, the manager sees it — before the pipeline review, not at it.</p></div>
+          </div>
+          <div class="st-feat">
+            <div class="st-feat-icon st-feat-icon--red">⚡</div>
+            <div><strong>Issues and Blockers — Systemic Detection</strong><p>Same blocker logged by 3+ reps in a week surfaces as a systemic signal — not a one-off. Data residency clause, pricing objection, competitor mention — routed to product as a P1, not buried in Slack.</p></div>
+          </div>
+          <div class="st-feat">
+            <div class="st-feat-icon st-feat-icon--green">★</div>
+            <div><strong>Wins with Auto Carry-over + Pattern Analysis</strong><p>Completed tasks auto-move to Wins. Yesterday's wins carry forward. SAM analyses which 3-touch sequences preceded each close — the playbook writes itself from real data.</p></div>
+          </div>
+          <div class="st-feat">
+            <div class="st-feat-icon st-feat-icon--purple">✦</div>
+            <div><strong>AI Review — Daily, Weekly, Monthly</strong><p>Claude reads everything — tasks, signals, omnichannel activity — and generates a structured review: completion rates, verified vs unverified tasks, recurring patterns, forward-looking recommendations.</p></div>
+          </div>
+          <div class="st-feat">
+            <div class="st-feat-icon st-feat-icon--gold">👥</div>
+            <div><strong>Manager View — Team Signal Dashboard</strong><p>Managers see every rep's day, drill into individual tasks and see which ones were verified against real activity. Date navigation across past days. Delegate tasks directly with a gold badge in the rep's app.</p></div>
+          </div>
+          <div class="st-feat">
+            <div class="st-feat-icon st-feat-icon--gold">⚙</div>
+            <div><strong>3-tier Org Structure + PWA</strong><p>Super Admin, Manager, Member. Multi-tenant org isolation. Full Supabase sync — log on mobile, review on desktop. Installable as a PWA on iOS and Android. Org-level signal configuration coming: calibrate cold thresholds, activity targets and deal stages per company.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st-intel">
+        <div class="st-intel-lbl reveal">The signal marriage — intent meets reality</div>
+        <div class="st-intel-grid">
+          <div class="stic reveal"><div class="stic-n">01</div><h4>Task vs Outreach Verification</h4><p>Rep logs "Follow up Ferrero." SAM checks sent email, LinkedIn messages, WhatsApp threads. If no activity found in 21 days — the manager sees a ⚠ flag, not a green status. Reality, not assumption.</p></div>
+          <div class="stic reveal"><div class="stic-n">02</div><h4>Omnichannel Activity Mapping</h4><p>Email sent, LinkedIn message delivered, WhatsApp reply received, call completed — every channel mapped against the task. If a rep is active on one channel but silent on another, SAM surfaces the gap.</p></div>
+          <div class="stic reveal"><div class="stic-n">03</div><h4>Blocker Pattern to Product Signal</h4><p>Blockers logged in SamoraTrack are cross-referenced with email objections and call transcript sentiment. The same issue appearing in 3 channels is not a rep problem — it is a product or positioning gap.</p></div>
+          <div class="stic reveal"><div class="stic-n">04</div><h4>Configurable Per Org</h4><p>Cold threshold, hot signal trigger, daily outreach targets, deal stages — all configurable per org. An FMCG company with a 6-month cycle reads signals very differently from a SaaS team closing in 30 days.</p></div>
+        </div>
+      </div>
+
+      <div class="st-cta reveal">
+        <div class="stcta-l">
+          <div class="stcta-badge">LIVE NOW</div>
+          <h3>SamoraTrack is live for your team today.</h3>
+          <p>3-tier roles. Daily, weekly and monthly AI reviews. Task-vs-reality verification across email, LinkedIn, WhatsApp and calls. Cross-device Supabase sync. PWA on any phone. Reps log in 60 seconds. Every entry is verified and flows into Agent SAM.</p>
+        </div>
+        <div class="stcta-r">
+          <a href="https://samoratrack.vercel.app" target="_blank" rel="noopener" class="btn btn--gold">Open SamoraTrack →</a>
+          <p class="stcta-note">samoratrack.vercel.app · PWA · Multi-tenant · Supabase sync</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta-section" id="cta">
+  <!-- SAM MAIL AGENT -->
+  <section class="sec sec--dark" id="sam-mail">
     <div class="container">
-      <h2 class="sec-h reveal">Start reading your signals today.</h2>
-      <p class="reveal">Connect Gmail in under 5 minutes. See the real relationship state for every account in your pipeline. No CRM update required. No rep logging required. Just reality.</p>
-      <div class="cta-btns reveal">
-        <a href="https://samora-mail.vercel.app" class="btn btn--gold">Open SAM Mail Agent →</a>
-        <a href="https://samoraglobal.com/#contact" class="btn btn--ghost">Talk to Samora</a>
+      <div class="sec-label reveal" style="color:var(--gl)">SAM Mail Agent</div>
+      <h2 class="sec-h reveal" style="color:var(--iv)">Every signal your team generates.<br/>One place. Zero manual entry.</h2>
+      <p class="sec-p reveal" style="color:var(--fog)">SAM Mail Agent is a standalone intelligence module — deploy it for the channels you use, integrate as deeply as your org needs. Start with email. Add LinkedIn. Add WhatsApp. Each module works independently and gets more powerful together.</p>
+
+      <!-- Modular architecture visual -->
+      <div class="sma-modules reveal">
+        <div class="sma-module sma-module--active">
+          <div class="sma-mod-icon" style="color:#EA4335">📧</div>
+          <div class="sma-mod-name">Gmail Signal</div>
+          <div class="sma-mod-status sma-mod-status--live">Live</div>
+          <div class="sma-mod-desc">Scans sent folder. Tracks opens, replies, sentiment. Flags cold threads. Cross-checks rep tasks against actual emails sent.</div>
+        </div>
+        <div class="sma-mod-plus">+</div>
+        <div class="sma-module sma-module--active">
+          <div class="sma-mod-icon" style="color:#0A66C2">💼</div>
+          <div class="sma-mod-name">LinkedIn Signal</div>
+          <div class="sma-mod-status sma-mod-status--live">Live</div>
+          <div class="sma-mod-desc">Connection requests, DMs, post interactions — all tracked. Intent signals from profile activity and engagement cross-referenced with outreach.</div>
+        </div>
+        <div class="sma-mod-plus">+</div>
+        <div class="sma-module sma-module--active">
+          <div class="sma-mod-icon" style="color:#25D366">💬</div>
+          <div class="sma-mod-name">WhatsApp Signal</div>
+          <div class="sma-mod-status sma-mod-status--live">Live</div>
+          <div class="sma-mod-desc">WhatsApp Business conversations tracked natively. Delivery, read receipts and reply signals unified alongside email and LinkedIn in one timeline.</div>
+        </div>
+        <div class="sma-mod-plus">+</div>
+        <div class="sma-module sma-module--coming">
+          <div class="sma-mod-icon" style="color:var(--ash)">📞</div>
+          <div class="sma-mod-name">Call Signal</div>
+          <div class="sma-mod-status sma-mod-status--coming">Coming</div>
+          <div class="sma-mod-desc">JustCall / CallHippo integration. Call recordings, transcripts and outcomes cross-referenced with tasks and pipeline stage.</div>
+        </div>
+      </div>
+
+      <div class="sma-grid">
+        <div class="sma-left reveal">
+          <div class="sma-flow">
+            <div class="sma-step">
+              <div class="sma-step-n">01</div>
+              <div><strong>Search any account — instantly</strong><p>Type a company name. SAM scans every channel your team has touched that account on — email threads, LinkedIn DMs, WhatsApp conversations — and pulls the full history in seconds.</p></div>
+            </div>
+            <div class="sma-connector"></div>
+            <div class="sma-step">
+              <div class="sma-step-n">02</div>
+              <div><strong>AI reads every thread, every channel</strong><p>Not just whether an email was sent — but what was said, how they replied, how fast, what sentiment. Two-stage AI analysis generates a unified Hot / Warm / Cold signal with days since last touch per channel.</p></div>
+            </div>
+            <div class="sma-connector"></div>
+            <div class="sma-step">
+              <div class="sma-step-n">03</div>
+              <div><strong>Task vs reality — verified automatically</strong><p>Rep logged "Follow up Ferrero." SAM checks every channel. Last email: 26 days ago. LinkedIn: no message sent. WhatsApp: no thread. The gap is surfaced to the manager before the next pipeline review.</p></div>
+            </div>
+            <div class="sma-connector"></div>
+            <div class="sma-step">
+              <div class="sma-step-n">04</div>
+              <div><strong>Manager sees every rep's signals</strong><p>One dashboard. Every rep's omnichannel activity unified. No rep self-reporting. No "I followed up" without the signal to prove it. Org-level accountability built in from day one.</p></div>
+            </div>
+            <div class="sma-connector"></div>
+            <div class="sma-step">
+              <div class="sma-step-n">05</div>
+              <div><strong>Modular. Deploy what you need.</strong><p>Start with just Gmail. Add LinkedIn when your team adopts it. Add WhatsApp for markets where it's the primary channel — India, Middle East, Africa. Each module activates independently. No rip-and-replace.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sma-right reveal">
+          <div class="sma-card">
+            <div class="sma-card-head">
+              <div class="sma-search-bar">
+                <span class="sma-search-icon">⌕</span>
+                <span class="sma-search-text">NovaMart Ltd</span>
+                <span class="sma-search-run">Run Signal Check</span>
+              </div>
+            </div>
+            <div class="sma-verdict sma-verdict--hot">
+              <div class="sma-verdict-dot"></div>
+              <div><div class="sma-verdict-label">HOT</div><div class="sma-verdict-sub">Last touch: 6 hours ago · 3 channels active</div></div>
+              <div class="sma-verdict-score">91</div>
+            </div>
+            <div class="sma-stats">
+              <div class="sma-stat"><div class="sma-stat-n" style="color:#EA4335">7</div><div class="sma-stat-l">📧 Emails</div></div>
+              <div class="sma-stat"><div class="sma-stat-n" style="color:#0A66C2">12</div><div class="sma-stat-l">💼 LinkedIn</div></div>
+              <div class="sma-stat"><div class="sma-stat-n" style="color:#25D366">5</div><div class="sma-stat-l">💬 WhatsApp</div></div>
+              <div class="sma-stat"><div class="sma-stat-n">4</div><div class="sma-stat-l">↩ Replies</div></div>
+            </div>
+            <div class="sma-analysis">
+              <div class="sma-analysis-lbl">SAM Analysis — Omnichannel Signal</div>
+              <p>Active across all 3 channels. VP Ops replied to 3 email threads, accepted the LinkedIn connection and responded on WhatsApp this morning. Proposal opened twice — no objection. Champion is hot. Internal approval imminent.</p>
+              <div class="sma-next-action">→ Send final T&Cs today. Close window is 7 days.</div>
+            </div>
+            <div class="sma-timeline">
+              <div class="sma-tl-head">Omnichannel Timeline</div>
+              <div class="sma-tl-item"><span class="sma-tag" style="background:rgba(234,67,53,.12);color:#EA4335">email</span><span class="sma-tl-text">Proposal sent — opened 2×</span><span class="sma-tl-reply sma-tl-reply--opened">opened</span></div>
+              <div class="sma-tl-item"><span class="sma-tag" style="background:rgba(10,102,194,.12);color:#0A66C2">linkedin</span><span class="sma-tl-text">Connection accepted + DM replied</span><span class="sma-tl-reply sma-tl-reply--yes">replied</span></div>
+              <div class="sma-tl-item"><span class="sma-tag" style="background:rgba(37,211,102,.1);color:#25D366">whatsapp</span><span class="sma-tl-text">Budget confirmation received</span><span class="sma-tl-reply sma-tl-reply--yes">replied</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sma-enterprise reveal">
+        <div class="sma-ent-left">
+          <div class="sma-ent-badge">MODULAR · ENTERPRISE READY</div>
+          <h3>Deploy one module. Scale to the full stack.</h3>
+          <p>SAM Mail Agent is built to fit your org's current tool stack — not replace it overnight. Connect Gmail today. Add LinkedIn signals when your team is ready. Expand to WhatsApp for markets that run on it. Samora holds one API key, each rep connects their channels once via OAuth, and the signal layer runs across your entire organisation. No rep self-reporting. No CRM updates. No manual data entry. Ever.</p>
+        </div>
+        <div class="sma-ent-right">
+          <a href="https://samora-mail.vercel.app" target="_blank" rel="noopener" class="btn btn--gold">Open SAM Mail Agent →</a>
+          <p class="stcta-note">samora-mail.vercel.app · Modular · Gmail + LinkedIn + WhatsApp</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- AGENT SAM INTERFACE -->
+  <section class="sec sec--dark" id="agent-sam">
+    <div class="container">
+      <div class="sec-label reveal" style="color:var(--gl)">Agent SAM</div>
+      <h2 class="sec-h reveal" style="color:var(--iv)">Your revenue team's<br/><em>intelligent co-pilot.</em></h2>
+      <p class="sec-p reveal" style="color:var(--fog)">Agent SAM sits on top of every signal Samora captures — SamoraTrack daily logs, calendar meetings, emails, LinkedIn, WhatsApp, call recordings, notetaker transcripts, external databases. It turns all that unstructured data into structured intelligence. And then it speaks — to the rep who needs clarity on their day, to the manager who needs to give real feedback, and to the board who deserves an honest view of growth.</p>
+
+      <!-- Three audience cards -->
+      <div class="sam-audience reveal">
+        <div class="sa-card">
+          <div class="sa-who">For the Rep</div>
+          <div class="sa-what">Daily clarity</div>
+          <p>Asks SAM: "What should I prioritise today?" SAM reads yesterday's activity, the pipeline health scores, the email threads that need follow-up, and the blockers logged by the team — and gives them a prioritised action list. Not a to-do app. An intelligent morning brief built from reality.</p>
+        </div>
+        <div class="sa-card sa-card--mid">
+          <div class="sa-who">For the Manager</div>
+          <div class="sa-what">Real coaching signals</div>
+          <p>Asks SAM: "Which of my reps needs help and why?" SAM reads every rep's daily logs, omnichannel activity, task-vs-reality gaps and deal health — and surfaces specific, actionable coaching points. No more "do more do more." Specific, evidenced, respectful feedback.</p>
+        </div>
+        <div class="sa-card">
+          <div class="sa-who">For the Board</div>
+          <div class="sa-what">360° growth intelligence</div>
+          <p>Asks SAM: "What is our real pipeline this quarter? Where are we on the expansion plan? What's our actual forecast accuracy?" SAM reads every signal — not the CRM, not the Excel deck — and gives a live, honest view of growth, conversion and readiness. No more garbage in, garbage out.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sam-wrap reveal">
+      <div class="sam-sugg">
+        <div class="sugg-label">Ask Agent SAM — for any role:</div>
+        <div class="sugg-chips">
+          <button class="chip" data-q="What should I prioritise today based on my pipeline health and yesterday's activity?">What should I prioritise today?</button>
+          <button class="chip" data-q="Which deals are dying silently and what is the earliest warning signal we missed?">Which deals are dying silently?</button>
+          <button class="chip chip--track" data-q="What blockers are reps logging most in SamoraTrack this week and what does it mean for the pipeline?">Rep blockers — systemic signals</button>
+          <button class="chip" data-q="Cross check what reps logged in SamoraTrack against actual email, LinkedIn and WhatsApp activity — where is the gap?">Task vs reality — where is the gap?</button>
+          <button class="chip" data-q="Give me an honest 360 view of our pipeline, forecast accuracy and expansion readiness for the board.">Board view — honest 360°</button>
+          <button class="chip" data-q="Give me the joint scoring forecast combining SamoraTrack signals, email activity, LinkedIn engagement and WhatsApp threads.">Joint scoring forecast</button>
+        </div>
+      </div>
+
+      <div class="sam-chat">
+        <div class="sam-header">
+          <div class="sam-av">SAM</div>
+          <div class="sam-meta">
+            <div class="sam-name">Agent SAM</div>
+            <div class="sam-status"><span class="ld"></span>Reading SamoraTrack · emails · LinkedIn · WhatsApp · calendar · call recordings</div>
+          </div>
+          <div class="sam-badge">Claude-Native · Revenue Co-pilot</div>
+        </div>
+        <div class="sam-msgs" id="samMsgs">
+          <div class="msg msg--sam">
+            <div class="msg-av">SAM</div>
+            <div class="msg-bub">
+              <p>Good morning. I've read across every signal source your team generates — <strong>SamoraTrack daily logs, 847 omnichannel touches, 34 meeting transcripts, calendar events and external enrichment data</strong>.</p>
+              <p>Here is what the data is telling me that no CRM would ever surface:</p>
+              <div class="insight-rows">
+                <div class="ir"><div class="irc irc--r"></div><div><strong>Rep anxiety signal:</strong> 3 reps are logging priorities that don't match their actual outreach activity. Tasks are being marked done — but the emails weren't sent, the LinkedIn messages weren't delivered. The gap between intent and action is widening.</div></div>
+                <div class="ir"><div class="irc irc--y"></div><div><strong>Manager blind spot:</strong> The data residency clause objection has appeared in 3 separate email threads, 2 WhatsApp conversations and 1 call transcript this week — across different reps, different accounts. This is a systemic blocker, not a rep problem.</div></div>
+                <div class="ir"><div class="irc irc--g"></div><div><strong>Board signal:</strong> Forecast accuracy is at <strong>87%</strong> — up 34 points since deploying signal capture. Pipeline of <strong>₹4.2Cr</strong> is signal-verified, not rep-reported. 3 deals have high close probability backed by omnichannel engagement, not opinion.</div></div>
+              </div>
+              <p>What would you like to explore? Ask me anything — as a rep, a manager or a board member.</p>
+            </div>
+          </div>
+        </div>
+        <div class="sam-input-row">
+          <input type="text" id="samIn" placeholder="Ask Agent SAM — rep, manager or board view…" autocomplete="off" />
+          <button id="samSend">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- STAKEHOLDER TABS -->
+  <section class="sec">
+    <div class="container">
+      <div class="sec-label reveal">One Truth. Four Views.</div>
+      <h2 class="sec-h reveal">The right signal, to the right person.</h2>
+      <div class="tabs-wrap">
+        <div class="tabs reveal">
+          <button class="tab active" data-tab="0">CEO / Board</button>
+          <button class="tab" data-tab="1">Revenue Owner</button>
+          <button class="tab" data-tab="2">Sales Manager</button>
+          <button class="tab" data-tab="3">Sales Rep</button>
+        </div>
+        <div class="tab-panels">
+          <div class="tp active" data-panel="0"><div class="tp-hl">Complete Transparency</div><div class="tp-items"><div class="tp-i"><span class="tpd"></span>Real pipeline: ₹4.2Cr — every number signal-verified, not rep-entered</div><div class="tp-i"><span class="tpd"></span>Win/loss reasons extracted from actual conversation data</div><div class="tp-i"><span class="tpd"></span>Expansion readiness scored: West Africa 72%, MENA 58%</div><div class="tp-i"><span class="tpd"></span>Honest forecasts built on captured reality, never assumed truth</div></div></div>
+          <div class="tp" data-panel="1"><div class="tp-hl">Authentic Funnel Movement</div><div class="tp-items"><div class="tp-i"><span class="tpd"></span>Every stage change backed by a real event — call, email or meeting</div><div class="tp-i"><span class="tpd"></span>9 deals at risk flagged — 6 are actionable right now this week</div><div class="tp-i"><span class="tpd"></span>Stage velocity improved: avg 18 days (was 31 days)</div><div class="tp-i"><span class="tpd"></span>Agent SAM running 14 outreach sequences autonomously</div></div></div>
+          <div class="tp" data-panel="2"><div class="tp-hl">Deal Health at a Glance</div><div class="tp-items"><div class="tp-i"><span class="tpd"></span>Rep A: 3 stalled deals, competitor objection unaddressed on call 3</div><div class="tp-i"><span class="tpd"></span>Rep B: 2 cold threads — re-engage prompts drafted automatically</div><div class="tp-i"><span class="tpd"></span>Coaching flags auto-generated from call sentiment analysis</div><div class="tp-i"><span class="tpd"></span>Top performer pattern: 2-day follow-up cadence consistently wins</div></div></div>
+          <div class="tp" data-panel="3"><div class="tp-hl">Alerts and Next Best Action</div><div class="tp-items"><div class="tp-i"><span class="tpd"></span>NovaMart: Send final T&Cs — close window is exactly 7 days</div><div class="tp-i"><span class="tpd"></span>BlueStar Foods: Proposal follow-up overdue by 3 days</div><div class="tp-i"><span class="tpd"></span>3 new ICP-matched accounts — outreach drafts ready to send now</div><div class="tp-i"><span class="tpd"></span>Acme Corp: Exec call suggested — champion engagement is spiking</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDUSTRY -->
+  <section class="sec sec--paper">
+    <div class="container">
+      <div class="sec-label reveal">The World Is Moving</div>
+      <h2 class="sec-h reveal">Headless is the new battleground.</h2>
+      <p class="sec-p reveal">Salesforce, SAP and the enterprise software world are scrambling toward headless architecture. Samora was designed this way from day one.</p>
+      <div class="news-grid">
+        <div class="nc reveal"><div class="nc-brand">SALESFORCE</div><div class="nc-tag">Headless 360 — April 2026</div><p class="nc-q">"CRM as an execution layer for humans, software and autonomous agents. The UI becomes oversight while execution happens elsewhere."</p><div class="nc-ins"><span>Samora Insight</span>Bolting headless onto a 25-year-old human-first architecture. The foundation is still broken.</div></div>
+        <div class="nc reveal"><div class="nc-brand">SAP</div><div class="nc-tag">Composable CX — Sapphire 2025</div><p class="nc-q">"A modern composable CX Suite. AI agents for sales, service and marketing. Modular bundles to adopt over time."</p><div class="nc-ins"><span>Samora Insight</span>Modular on top of monolithic. Still relies on human-logged data as its source of truth.</div></div>
+        <div class="nc reveal"><div class="nc-brand">SaaStr</div><div class="nc-tag">Living the Headless Future — 2025</div><p class="nc-q">"No one starts their day logging into Salesforce. The agent reads the CRM, reasons over it and pushes what matters to where the team lives."</p><div class="nc-ins"><span>Samora Insight</span>Spending 15x more on agents than CRM licenses. The intelligence layer is where value lives now.</div></div>
+      </div>
+      <div class="industry-close reveal">Samora is not catching up to headless. It was designed headless, agent-first, from day one.</div>
+    </div>
+  </section>
+
+  <!-- FOUNDER -->
+  <section class="sec sec--dark" id="founder">
+    <div class="container">
+      <div class="founder-grid">
+        <div class="fl reveal">
+          <div class="sec-label" style="color:var(--gold)">The Builder</div>
+          <h2 style="color:var(--iv)">12 years. Zero shortcuts.</h2>
+          <p style="color:var(--fog)">Samora was not built in a boardroom. It was built by doing the work — market by market, deal by deal, failure by failure.</p>
+          <div class="tl">
+            <div class="tli"><div class="tly">2014–16</div><div class="tlb"><strong>Accenture — Analyst</strong><span>Started as an Oracle apps developer and requirement gatherer. Liaising with clients taught me that solutions were never about tech today and savings tomorrow — it was about transparency today and concrete business decisions for growth tomorrow.</span></div></div>
+            <div class="tli"><div class="tly">2018–20</div><div class="tlb"><strong>Global Regional Expansion and Fortune 500 XP</strong><span>MBA gave a further business lens. Opening Fortune 500 logos and new geographies was thrilling and dopamine max. For a Fortune 500 company like Compass, being a regional owner with best-in-class <span class="tl-meddpic">MEDDPIC</span> framework got me groomed and fertile.</span></div></div>
+            <div class="tli"><div class="tly">2021–26</div><div class="tlb"><strong>Enterprise Rockstar — Expansion (0→1, 1→10, 10→100+) mandates</strong><span>After 100+ enterprise deals, records broken every month, quarter and year. Team quotas had a different challenge: bad CRM data, broken forecasts, reps drowning in admin.</span></div></div>
+            <div class="tli tli--a"><div class="tly">2026+</div><div class="tlb"><strong>Pattern Recognition and Samora</strong><span>Founded Samora Global. First client: Undisclosed. First thesis: the CRM needs to be rebuilt from honesty, not human entry.</span></div></div>
+          </div>
+        </div>
+        <div class="fr reveal">
+          <div class="lessons">
+            <div class="lh">What 12 years taught him</div>
+            <div class="les"><div class="ln">01</div><div><strong>GTM fails at the data layer first</strong><p>Not strategy. Not people. The data that drives decisions is wrong from the start.</p></div></div>
+            <div class="les"><div class="ln">02</div><div><strong>Reps are not the problem</strong><p>They are trapped in a system designed to punish them for doing real work instead of data entry.</p></div></div>
+            <div class="les"><div class="ln">03</div><div><strong>New regions fail predictably</strong><p>No ICP. No honest pipeline. No feedback loop. The playbook lands but the signals never come back.</p></div></div>
+            <div class="les"><div class="ln">04</div><div><strong>The real bottleneck is invisibility</strong><p>Deals die in the gap between what happened and what was logged. Samora closes that gap.</p></div></div>
+            <div class="les"><div class="ln">05</div><div><strong>The next decade belongs to honest infrastructure</strong><p>AI can only be as good as the data it reads. Fix the foundation. Everything else follows.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION -->
+  <section class="vision-sec">
+    <div class="container">
+      <div class="vis-inner reveal">
+        <p class="vl">The signals were always there.</p>
+        <p class="vl vl--g">Nobody made them speak to each other.</p>
+        <div class="vr"></div>
+        <p class="vb">Every email your rep sent. Every call they took. Every note they scribbled after a meeting. Every priority they logged at the start of the day. Every LinkedIn message. Every WhatsApp reply. Every calendar event. Every notetaker transcript. Every external signal about your prospects' company.</p>
+        <p class="vb">All of it existed. All of it was unstructured, siloed, speaking to nobody. The rep didn't know if they were doing enough. The manager didn't know what feedback to give beyond "do more." The board was looking at a forecast built on hope and Excel.</p>
+        <p class="vb">Samora takes all of that unstructured reality — from every source, every channel, every human in your revenue team — and makes it structured, searchable and intelligent. And then Agent SAM starts speaking. To the rep who needs clarity. To the manager who needs to coach. To the board who deserves the truth.</p>
+        <p class="vb" style="color:var(--gold);font-style:italic;font-family:'EB Garamond',serif;font-size:1.2rem">This is not a better CRM. This is what comes after the CRM.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="sec sec--dark" id="contact">
+    <div class="container">
+      <div class="cg">
+        <div class="cl reveal">
+          <div class="sec-label" style="color:var(--gold)">Get Started</div>
+          <h2 style="color:var(--iv)">Ready to expand with confidence?</h2>
+          <p style="color:var(--fog)">Start with a 30-minute Reality Audit. We map your current stack, score your pipeline integrity and show where the data is lying.</p>
+          <div class="csteps">
+            <div class="cst"><div class="csn">1</div><div><strong>Expansion Readiness Score</strong><span>30-minute call</span></div></div>
+            <div class="cst"><div class="csn">2</div><div><strong>Custom GTM Blueprint</strong><span>2 weeks</span></div></div>
+            <div class="cst"><div class="csn">3</div><div><strong>Agent SAM Deployment</strong><span>5-week sprint</span></div></div>
+          </div>
+        </div>
+        <div class="cr reveal">
+          <form id="contactForm" novalidate>
+            <div class="fg"><label>Full Name</label><input type="text" name="name" placeholder="Your name" /></div>
+            <div class="fg"><label>Company</label><input type="text" name="company" placeholder="Company name" /></div>
+            <div class="fg"><label>Email</label><input type="email" name="email" placeholder="work@company.com" /></div>
+            <div class="fg"><label>Biggest GTM challenge?</label>
+              <select name="challenge"><option value="">Select one</option><option>Pipeline predictability / forecast accuracy</option><option>ICP identification and targeting</option><option>Expanding into new regions</option><option>Outreach scale and personalisation</option><option>CRM data quality and rep adoption</option></select>
+            </div>
+            <button type="submit" class="btn btn--gold btn--full">Request a Reality Audit</button>
+            <p class="fnote">We respond within one business day. No spam.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="footer">
     <div class="container">
-      <div class="footer-inner">
-        <div>
-          <div class="footer-brand">SAMORA</div>
-          <div class="footer-product">SAM Mail Agent · Signal Intelligence Module</div>
-        </div>
-        <div style="display:flex;gap:2rem">
-          <a href="https://samoraglobal.com" class="footer-link">samoraglobal.com</a>
-          <a href="https://samoratrack.vercel.app" class="footer-link">SamoraTrack</a>
-          <a href="https://samoraglobal.com/#contact" class="footer-link">Contact</a>
+      <div class="ft">
+        <div class="fb"><div class="flogo">SAMORA</div><p>Global Growth Consultants</p><p class="ftag">The Honest CRM</p></div>
+        <div class="fnav">
+          <div class="fnc"><div class="fnh">Platform</div><a href="#solution">How It Works</a><a href="#dashboard">Dashboard</a><a href="#samoratrack">SamoraTrack</a><a href="#sam-mail">SAM Mail</a><a href="#agent-sam">Agent SAM</a></div>
+          <div class="fnc"><div class="fnh">Company</div><a href="#founder">About</a><a href="#contact">Contact</a></div>
         </div>
       </div>
+      <div class="fbtm"><span>© 2025 Samora Global Growth Consultants</span><span>samora.global</span></div>
     </div>
   </footer>
 
-  <script>
-    // Reveal on scroll
-    const ro = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        const parent = e.target.closest('.modules-grid,.deploy-grid,.demo-grid');
-        const delay = parent ? [...parent.querySelectorAll('.reveal')].indexOf(e.target) * 100 : 0;
-        setTimeout(() => e.target.classList.add('visible'), delay);
-        ro.unobserve(e.target);
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-    document.querySelectorAll('.reveal').forEach(el => {
-      if (el.closest('section') === document.querySelector('.hero')) {
-        const i = [...document.querySelectorAll('.hero .reveal')].indexOf(el);
-        setTimeout(() => el.classList.add('visible'), 200 + i * 150);
-      } else {
-        ro.observe(el);
-      }
-    });
-
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const t = document.querySelector(a.getAttribute('href'));
-        if (!t) return;
-        e.preventDefault();
-        t.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-  </script>
+  <div class="toast" id="toast"><span>✓</span> We'll be in touch within one business day.</div>
+  <script src="js/main.js"></script>
 </body>
 </html>
